@@ -502,6 +502,24 @@
 
         .form-group input::placeholder { color: #333; }
 
+        .form-group textarea {
+            width: 100%;
+            background: transparent;
+            border: 1px solid #1a1a1a;
+            border-bottom-color: rgba(0,212,255,0.3);
+            color: #e0e0e0;
+            padding: 0.9rem 0;
+            font-family: inherit;
+            font-size: 0.78rem;
+            letter-spacing: 1px;
+            outline: none;
+            resize: vertical;
+            min-height: 90px;
+            transition: border-color 0.3s;
+        }
+        .form-group textarea:focus { border-bottom-color: var(--neon); }
+        .form-group textarea::placeholder { color: #333; }
+
         .btn-submit {
             width: 100%;
             background: transparent;
@@ -1449,6 +1467,96 @@
         .custom-callout-btn:hover::before { left: 0; }
         .custom-callout-btn:hover { color: #000; }
 
+        /* ── Live Activity Feed ── */
+        .activity-feed {
+            position: fixed;
+            bottom: 1.2rem;
+            left: 1.2rem;
+            width: 276px;
+            background: rgba(0,0,0,0.88);
+            border: 1px solid rgba(0,212,255,0.14);
+            border-left: 2px solid var(--neon);
+            padding: 0.6rem 0.8rem;
+            font-size: 0.62rem;
+            line-height: 1.6;
+            z-index: 200;
+            pointer-events: none;
+        }
+        .activity-feed-header { color: var(--neon); letter-spacing: 3px; margin-bottom: 0.3rem; opacity: 0.55; }
+        .activity-log { overflow: hidden; }
+        .activity-log-line { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: rgba(0,212,255,0.4); }
+        .activity-log-line.new { color: rgba(0,255,190,0.9); }
+
+        /* ── Technical HUD Overlay ── */
+        .hud-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 150; }
+        .hud-corner { position: absolute; font-size: 0.54rem; letter-spacing: 2px; color: rgba(0,212,255,0.2); line-height: 2; }
+        .hud-corner.tl { top: 5rem;    left: 0.8rem; }
+        .hud-corner.tr { top: 5rem;    right: 0.8rem; text-align: right; }
+        .hud-corner.bl { bottom: 11rem; left: 0.8rem; }
+        .hud-corner.br { bottom: 1rem;  right: 0.8rem; text-align: right; }
+
+        /* ── Command Palette ── */
+        .cmd-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.72); backdrop-filter: blur(4px); z-index: 900; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        .cmd-backdrop.open { opacity: 1; pointer-events: all; }
+        .cmd-palette {
+            position: fixed; top: 20%; left: 50%;
+            transform: translateX(-50%) translateY(-12px);
+            width: min(600px, 90vw);
+            background: rgba(3,5,8,0.97);
+            border: 1px solid rgba(0,212,255,0.28);
+            box-shadow: 0 0 40px rgba(0,212,255,0.07), 0 20px 60px rgba(0,0,0,0.9);
+            z-index: 901; opacity: 0; pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .cmd-palette.open { opacity: 1; pointer-events: all; transform: translateX(-50%) translateY(0); }
+        .cmd-input-wrap { display: flex; align-items: center; gap: 0.8rem; padding: 1rem 1.2rem; border-bottom: 1px solid rgba(0,212,255,0.1); }
+        .cmd-prompt { color: var(--neon); font-size: 0.9rem; opacity: 0.55; }
+        .cmd-input { flex: 1; background: transparent; border: none; outline: none; color: #e0f7ff; font-family: inherit; font-size: 0.85rem; letter-spacing: 1px; }
+        .cmd-hint { font-size: 0.56rem; color: rgba(0,212,255,0.22); letter-spacing: 2px; white-space: nowrap; }
+        .cmd-results { max-height: 300px; overflow-y: auto; }
+        .cmd-section-label { padding: 0.5rem 1.2rem 0.25rem; font-size: 0.56rem; letter-spacing: 3px; color: rgba(0,212,255,0.28); border-top: 1px solid rgba(0,212,255,0.06); }
+        .cmd-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.65rem 1.2rem; cursor: pointer; transition: background 0.12s; }
+        .cmd-item:hover, .cmd-item.active { background: rgba(0,212,255,0.06); }
+        .cmd-item-icon { font-size: 1rem; width: 1.5rem; text-align: center; }
+        .cmd-item-label { font-size: 0.76rem; color: #c8e6f0; letter-spacing: 1px; flex: 1; }
+        .cmd-item-tag { font-size: 0.55rem; color: rgba(0,212,255,0.28); letter-spacing: 2px; }
+        .cmd-footer { padding: 0.5rem 1.2rem; border-top: 1px solid rgba(0,212,255,0.07); font-size: 0.54rem; color: rgba(0,212,255,0.2); letter-spacing: 2px; display: flex; gap: 1.5rem; flex-wrap: wrap; }
+        .cmd-footer kbd { display: inline-block; padding: 0 4px; border: 1px solid rgba(0,212,255,0.16); border-radius: 2px; font-family: inherit; color: rgba(0,212,255,0.32); }
+
+        /* ── Contextual Sidepanel ── */
+        .sidepanel {
+            position: fixed; top: 50%; right: 0;
+            transform: translateY(-50%) translateX(100%);
+            width: min(320px, 88vw); max-height: 75vh;
+            background: rgba(2,6,10,0.95);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-right: none;
+            backdrop-filter: blur(14px);
+            z-index: 400; padding: 1.4rem; overflow-y: auto;
+            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+        }
+        .sidepanel.open { transform: translateY(-50%) translateX(0); }
+        .sidepanel-id { font-size: 0.56rem; letter-spacing: 4px; color: var(--neon); opacity: 0.55; margin-bottom: 0.5rem; }
+        .sidepanel-title { font-size: 0.88rem; font-weight: 700; color: #e0f7ff; letter-spacing: 2px; margin-bottom: 0.8rem; }
+        .sidepanel-desc { font-size: 0.7rem; color: rgba(200,230,240,0.58); line-height: 1.8; border-top: 1px solid rgba(0,212,255,0.1); padding-top: 0.8rem; margin-bottom: 1rem; }
+        .sidepanel-stat-label { font-size: 0.56rem; letter-spacing: 3px; color: var(--neon); opacity: 0.5; margin-bottom: 0.5rem; }
+        .sidepanel-bar-wrap { height: 3px; background: rgba(0,212,255,0.1); margin-bottom: 0.35rem; overflow: hidden; }
+        .sidepanel-bar { height: 100%; background: var(--neon); box-shadow: 0 0 8px var(--neon); width: 0%; transition: width 0.6s ease; }
+        .sidepanel-bar-pct { font-size: 0.6rem; color: var(--neon); letter-spacing: 2px; margin-bottom: 0.8rem; }
+        .sidepanel-keys { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+        .sidepanel-key { font-size: 0.54rem; padding: 0.2rem 0.45rem; border: 1px solid rgba(0,212,255,0.16); color: rgba(0,212,255,0.4); letter-spacing: 1px; }
+
+        /* ── RGB Glitch effect ── */
+        .rgb-glitch-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 790; opacity: 0; }
+        .rgb-glitch-overlay.r { background: rgba(255,0,80,0.07); }
+        .rgb-glitch-overlay.g { background: rgba(0,255,120,0.04); }
+        .rgb-glitch-overlay.b { background: rgba(0,80,255,0.06); }
+
+        /* ── Network Graph section ── */
+        .network-section { padding: 5rem 2rem; position: relative; overflow: hidden; }
+        .network-canvas { display: block; width: 100%; height: 420px; cursor: crosshair; }
+        .network-hint { text-align: center; margin-top: 1rem; font-size: 0.62rem; letter-spacing: 3px; color: rgba(0,212,255,0.28); }
+
         /* ── Footer ── */
         footer {
             padding: 2.2rem;
@@ -1469,6 +1577,48 @@
     <div class="cursor-ring" id="cursorRing"></div>
     <div class="page-scan"></div>
     <div class="scroll-bar" id="scrollBar"></div>
+
+    <!-- Activity Feed -->
+    <div class="activity-feed">
+        <div class="activity-feed-header">// SYSTEM LOG</div>
+        <div class="activity-log" id="activityLog"></div>
+    </div>
+
+    <!-- HUD Overlay -->
+    <div class="hud-overlay">
+        <div class="hud-corner tl">SYS: ACTIVE<br>VER: 2.4.1<br>NODE: AUT-01</div>
+        <div class="hud-corner tr" id="hudTR">LATENCY: --ms<br>UPTIME: 00:00:00<br>STATUS: OK</div>
+        <div class="hud-corner bl" id="hudBL">X: 0000&nbsp;Y: 0000</div>
+        <div class="hud-corner br">BUILD: STABLE<br>ENV: PROD</div>
+    </div>
+
+    <!-- Command Palette -->
+    <div class="cmd-backdrop" id="cmdBackdrop"></div>
+    <div class="cmd-palette" id="cmdPalette">
+        <div class="cmd-input-wrap">
+            <span class="cmd-prompt">&gt;_</span>
+            <input class="cmd-input" id="cmdInput" type="text" placeholder="Buscar servicios, secciones..." autocomplete="off" spellcheck="false">
+            <span class="cmd-hint">ESC cierra</span>
+        </div>
+        <div class="cmd-results" id="cmdResults"></div>
+        <div class="cmd-footer">
+            <span><kbd>↑↓</kbd> navegar</span>
+            <span><kbd>↵</kbd> abrir</span>
+            <span><kbd>ESC</kbd> cerrar</span>
+            <span><kbd>Ctrl+K</kbd> abrir</span>
+        </div>
+    </div>
+
+    <!-- Contextual Sidepanel -->
+    <div class="sidepanel" id="sidepanel">
+        <div class="sidepanel-id" id="spId"></div>
+        <div class="sidepanel-title" id="spTitle"></div>
+        <div class="sidepanel-desc" id="spDesc"></div>
+        <div class="sidepanel-stat-label">AHORRO DE TIEMPO ESTIMADO</div>
+        <div class="sidepanel-bar-wrap"><div class="sidepanel-bar" id="spBar"></div></div>
+        <div class="sidepanel-bar-pct" id="spPct"></div>
+        <div class="sidepanel-keys" id="spKeys"></div>
+    </div>
 
     <!-- Nav -->
     <nav>
@@ -1657,6 +1807,17 @@
         </div>
     </section>
 
+    <!-- Network Graph -->
+    <section class="network-section" id="red">
+        <div class="section-header">
+            <div class="section-label">// ARQUITECTURA DE CONEXIONES</div>
+            <h2 class="section-title">RED DE <span>SERVICIOS</span></h2>
+            <div class="section-line"></div>
+        </div>
+        <canvas class="network-canvas" id="networkCanvas"></canvas>
+        <p class="network-hint">// HOVER SOBRE UN NODO PARA EXPLORAR &rarr; CLICK PARA VER DETALLES</p>
+    </section>
+
     <!-- Benefits -->
     <section class="benefits" id="beneficios">
         <div class="section-header">
@@ -1793,6 +1954,12 @@
                                     placeholder="3XX XXX XXXX" autocomplete="off">
                             </div>
                             <input type="hidden" name="telefono" id="telefonoFull">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex:1">
+                            <label for="descripcion">DESCRIPCIÓN DEL PROYECTO <span style="color:#333;font-size:0.65rem;letter-spacing:1px">(OPCIONAL)</span></label>
+                            <textarea id="descripcion" name="descripcion" placeholder="Cuéntanos qué necesitas automatizar o desarrollar. Entre más detalle, mejor podemos asesorarte..." rows="4"></textarea>
                         </div>
                     </div>
                     <button type="submit" class="btn-submit">[ SOLICITAR ASESORÍA GRATUITA ]</button>
@@ -2569,6 +2736,264 @@
                 });
                 requestAnimationFrame(tick);
             })();
+        })();
+
+        // ── Live Activity Feed ───────────────────────────────────────────────
+        (function() {
+            const LINES = [
+                'INIT: AUT core services loaded',
+                'SYNC: Telegram API connected',
+                'PROC: Scraping module → standby',
+                'AUTH: Session token validated',
+                'EXEC: Bot scheduler active',
+                'DATA: Pipeline ETL idle',
+                'NET: WebSocket handshake OK',
+                'CACHE: 128 MB allocated',
+                'TASK: Cron job registered',
+                'API: REST endpoint /v2/run',
+                'MON: CPU 14.2% MEM 38%',
+                'ALERT: New lead detected',
+                'PUSH: Notification dispatched',
+                'DB: Query executed in 3ms',
+                'FILE: 847 records processed',
+                'BOT: Automation cycle complete',
+                'SCAN: 0 errors detected',
+                'SYS: Uptime 99.97%',
+                'LOG: Event stored to database',
+                'RPC: Remote call → success',
+            ];
+            const log = document.getElementById('activityLog');
+            if (!log) return;
+            let n = 0;
+            function addLine() {
+                const el = document.createElement('span');
+                el.className = 'activity-log-line new';
+                const ts = new Date().toISOString().substr(11, 8);
+                el.textContent = '[' + ts + '] ' + LINES[n % LINES.length];
+                log.appendChild(el);
+                setTimeout(() => el.classList.remove('new'), 500);
+                n++;
+                while (log.children.length > 7) log.removeChild(log.firstChild);
+            }
+            for (let i = 0; i < 5; i++) setTimeout(addLine, i * 200);
+            setInterval(addLine, 2800);
+        })();
+
+        // ── Technical HUD Overlay ───────────────────────────────────────────
+        (function() {
+            const bl = document.getElementById('hudBL');
+            const tr = document.getElementById('hudTR');
+            if (bl) {
+                window.addEventListener('mousemove', e => {
+                    bl.innerHTML = 'X:&nbsp;' + String(Math.round(e.clientX)).padStart(4,'0') + '&nbsp;&nbsp;Y:&nbsp;' + String(Math.round(e.clientY)).padStart(4,'0');
+                }, { passive: true });
+            }
+            if (tr) {
+                let uptime = 0;
+                setInterval(() => {
+                    uptime++;
+                    const lat = (8 + Math.random() * 18).toFixed(0);
+                    const h = String(Math.floor(uptime / 3600)).padStart(2,'0');
+                    const m = String(Math.floor((uptime % 3600) / 60)).padStart(2,'0');
+                    const s = String(uptime % 60).padStart(2,'0');
+                    tr.innerHTML = 'LATENCY:&nbsp;' + lat + 'ms<br>UPTIME:&nbsp;' + h + ':' + m + ':' + s + '<br>STATUS:&nbsp;OK';
+                }, 1000);
+            }
+        })();
+
+        // ── Command Palette ─────────────────────────────────────────────────
+        (function() {
+            const backdrop = document.getElementById('cmdBackdrop');
+            const palette  = document.getElementById('cmdPalette');
+            const input    = document.getElementById('cmdInput');
+            const results  = document.getElementById('cmdResults');
+            if (!palette) return;
+
+            const NAV = [
+                { icon: '⚡', label: 'SERVICIOS',  tag: 'SECCIÓN', href: '#servicios' },
+                { icon: '💡', label: 'BENEFICIOS', tag: 'SECCIÓN', href: '#beneficios' },
+                { icon: '⚙️', label: 'PROCESO',    tag: 'SECCIÓN', href: '#proceso' },
+                { icon: '📨', label: 'CONTACTO',   tag: 'SECCIÓN', href: '#contacto' },
+            ];
+            let activeIdx = -1;
+
+            function open() {
+                palette.classList.add('open');
+                backdrop.classList.add('open');
+                input.value = ''; activeIdx = -1;
+                render('');
+                setTimeout(() => input.focus(), 50);
+            }
+            function close() {
+                palette.classList.remove('open');
+                backdrop.classList.remove('open');
+                input.blur();
+            }
+            function render(q) {
+                const Q = q.toUpperCase();
+                const nav = Q ? NAV.filter(c => c.label.includes(Q)) : NAV;
+                const svc = SERVICES_DATA.filter(s => !Q || s.title.toUpperCase().includes(Q) || s.tag.toUpperCase().includes(Q));
+                let html = '';
+                if (nav.length) {
+                    html += '<div class="cmd-section-label">NAVEGACIÓN</div>';
+                    html += nav.map(c => `<div class="cmd-item" data-href="${c.href}"><span class="cmd-item-icon">${c.icon}</span><span class="cmd-item-label">${c.label}</span><span class="cmd-item-tag">${c.tag}</span></div>`).join('');
+                }
+                if (svc.length) {
+                    html += '<div class="cmd-section-label">SERVICIOS</div>';
+                    html += svc.map((s, i) => `<div class="cmd-item" data-svc="${SERVICES_DATA.indexOf(s)}"><span class="cmd-item-icon">${s.icon}</span><span class="cmd-item-label">${s.title.toUpperCase()}</span><span class="cmd-item-tag">${s.tag.split('·')[0].trim()}</span></div>`).join('');
+                }
+                if (!html) html = '<div style="padding:1.2rem;text-align:center;font-size:0.72rem;color:rgba(0,212,255,0.3);letter-spacing:2px;">SIN RESULTADOS</div>';
+                results.innerHTML = html;
+                activeIdx = -1;
+                results.querySelectorAll('.cmd-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        if (el.dataset.href) { document.querySelector(el.dataset.href)?.scrollIntoView({ behavior: 'smooth' }); close(); }
+                        else if (el.dataset.svc !== undefined) { openServiceModal(parseInt(el.dataset.svc)); close(); }
+                    });
+                });
+            }
+            input.addEventListener('input', () => render(input.value));
+            input.addEventListener('keydown', e => {
+                const items = [...results.querySelectorAll('.cmd-item')];
+                if (e.key === 'ArrowDown')  { e.preventDefault(); items[activeIdx]?.classList.remove('active'); activeIdx = (activeIdx + 1) % items.length; items[activeIdx]?.classList.add('active'); items[activeIdx]?.scrollIntoView({ block:'nearest' }); }
+                else if (e.key === 'ArrowUp') { e.preventDefault(); items[activeIdx]?.classList.remove('active'); activeIdx = (activeIdx - 1 + items.length) % items.length; items[activeIdx]?.classList.add('active'); items[activeIdx]?.scrollIntoView({ block:'nearest' }); }
+                else if (e.key === 'Enter')   { items[activeIdx]?.click(); }
+                else if (e.key === 'Escape')  { close(); }
+            });
+            backdrop.addEventListener('click', close);
+            document.addEventListener('keydown', e => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); palette.classList.contains('open') ? close() : open(); }
+                else if (e.key === 'Escape' && palette.classList.contains('open')) close();
+            });
+        })();
+
+        // ── RGB Glitch Transitions ──────────────────────────────────────────
+        (function() {
+            const r = document.createElement('div'); r.className = 'rgb-glitch-overlay r';
+            const g = document.createElement('div'); g.className = 'rgb-glitch-overlay g';
+            const b = document.createElement('div'); b.className = 'rgb-glitch-overlay b';
+            document.body.append(r, g, b);
+            function doGlitch() {
+                r.style.cssText = 'opacity:1;transform:translate(-3px,0)';
+                g.style.cssText = 'opacity:1;transform:translate(3px,0)';
+                b.style.cssText = 'opacity:1;transform:translate(0,-2px)';
+                setTimeout(() => {
+                    r.style.cssText = 'opacity:0;transform:none';
+                    g.style.cssText = 'opacity:0;transform:none';
+                    b.style.cssText = 'opacity:0;transform:none';
+                }, 100);
+            }
+            const glitchObs = new IntersectionObserver(entries => {
+                entries.forEach(e => { if (e.isIntersecting) doGlitch(); });
+            }, { threshold: 0.25 });
+            document.querySelectorAll('section').forEach(s => glitchObs.observe(s));
+        })();
+
+        // ── Network Graph ──────────────────────────────────────────────────
+        (function() {
+            const canvas = document.getElementById('networkCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const NEON = '#00d4ff';
+            function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; place(); }
+            const nodes = SERVICES_DATA.map(s => ({ ...s, x: 0, y: 0, r: 22 }));
+            function place() {
+                const W = canvas.width, H = canvas.height;
+                nodes.forEach((n, i) => {
+                    const angle = (i / nodes.length) * Math.PI * 2 - Math.PI / 2;
+                    n.x = W / 2 + W * 0.38 * Math.cos(angle);
+                    n.y = H / 2 + H * 0.38 * Math.sin(angle);
+                });
+            }
+            resize();
+            window.addEventListener('resize', () => { resize(); });
+            let hov = null, mx = -999, my = -999;
+            canvas.addEventListener('mousemove', e => {
+                const rect = canvas.getBoundingClientRect();
+                mx = e.clientX - rect.left; my = e.clientY - rect.top;
+                hov = nodes.find(n => Math.hypot(n.x - mx, n.y - my) < n.r + 12) || null;
+                canvas.style.cursor = hov ? 'pointer' : 'crosshair';
+            });
+            canvas.addEventListener('mouseleave', () => { hov = null; });
+            canvas.addEventListener('click', () => { if (hov) openServiceModal(nodes.indexOf(hov)); });
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Connections
+                nodes.forEach((a, i) => {
+                    nodes.forEach((b, j) => {
+                        if (j <= i) return;
+                        const active = hov && (a === hov || b === hov);
+                        const dist = Math.hypot(a.x - b.x, a.y - b.y);
+                        const alpha = active ? 0.55 : Math.max(0, 0.13 - dist / 2800);
+                        if (alpha < 0.01) return;
+                        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+                        ctx.strokeStyle = 'rgba(0,212,255,' + alpha + ')';
+                        ctx.lineWidth = active ? 1.5 : 0.5;
+                        ctx.shadowBlur = active ? 8 : 0; ctx.shadowColor = NEON;
+                        ctx.stroke(); ctx.shadowBlur = 0;
+                    });
+                });
+                // Nodes
+                nodes.forEach(n => {
+                    const isH = n === hov;
+                    ctx.beginPath(); ctx.arc(n.x, n.y, n.r * (isH ? 1.2 : 1), 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(0,212,255,' + (isH ? 0.1 : 0.04) + ')';
+                    ctx.fill();
+                    ctx.strokeStyle = NEON; ctx.lineWidth = isH ? 2 : 1;
+                    ctx.shadowColor = NEON; ctx.shadowBlur = isH ? 18 : 6;
+                    ctx.stroke(); ctx.shadowBlur = 0;
+                    ctx.font = (isH ? '15' : '13') + 'px serif';
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText(n.icon, n.x, n.y);
+                    ctx.font = '8px "JetBrains Mono", monospace';
+                    ctx.fillStyle = 'rgba(0,212,255,' + (isH ? 0.8 : 0.28) + ')';
+                    ctx.fillText(n.num, n.x, n.y - n.r - 8);
+                    if (isH) {
+                        ctx.font = '700 10px "JetBrains Mono", monospace';
+                        ctx.fillStyle = '#e0f7ff'; ctx.shadowColor = NEON; ctx.shadowBlur = 8;
+                        ctx.fillText(n.title.toUpperCase(), n.x, n.y + n.r + 16);
+                        ctx.shadowBlur = 0;
+                    }
+                });
+                // Pulse ring on hover
+                if (hov) {
+                    const t = (Date.now() % 1200) / 1200;
+                    ctx.beginPath(); ctx.arc(hov.x, hov.y, hov.r + t * 32, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(0,212,255,' + (0.45 * (1 - t)) + ')';
+                    ctx.lineWidth = 1.5; ctx.stroke();
+                }
+                requestAnimationFrame(draw);
+            }
+            draw();
+        })();
+
+        // ── Contextual Sidepanel ───────────────────────────────────────────
+        (function() {
+            const panel = document.getElementById('sidepanel');
+            if (!panel) return;
+            const SAVINGS = [75,85,70,65,80,60,50,90,95,80,70];
+            let closeTimer = null;
+            function showPanel(idx) {
+                clearTimeout(closeTimer);
+                const s = SERVICES_DATA[idx];
+                const pct = SAVINGS[idx] || 70;
+                document.getElementById('spId').textContent    = '// MODULE: ' + s.title.toUpperCase().replace(/\s+/g,'_');
+                document.getElementById('spTitle').textContent = s.title.toUpperCase();
+                document.getElementById('spDesc').textContent  = s.desc.substring(0, 160) + '…';
+                const bar = document.getElementById('spBar');
+                bar.style.width = '0%';
+                document.getElementById('spPct').textContent = '';
+                document.getElementById('spKeys').innerHTML = s.examples.slice(0,4).map(e => '<span class="sidepanel-key">' + e.toUpperCase() + '</span>').join('');
+                panel.classList.add('open');
+                setTimeout(() => { bar.style.width = pct + '%'; document.getElementById('spPct').textContent = pct + '% AHORRO'; }, 120);
+            }
+            function hidePanel() { closeTimer = setTimeout(() => panel.classList.remove('open'), 220); }
+            document.querySelectorAll('.card').forEach((card, idx) => {
+                card.addEventListener('mouseenter', () => showPanel(idx));
+                card.addEventListener('mouseleave', hidePanel);
+            });
+            panel.addEventListener('mouseenter', () => clearTimeout(closeTimer));
+            panel.addEventListener('mouseleave', hidePanel);
         })();
 
     </script>
