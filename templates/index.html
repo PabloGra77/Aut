@@ -513,6 +513,127 @@
         .btn-submit:hover::before { left: 0; }
         .btn-submit:hover { color: #000; }
 
+        /* ── Country phone selector ── */
+        .phone-group {
+            display: flex;
+        }
+
+        .country-select-wrapper {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .country-trigger {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.85rem 0.75rem;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(0,212,255,0.18);
+            border-right: none;
+            cursor: pointer;
+            min-width: 86px;
+            transition: border-color 0.3s, background 0.3s;
+            color: var(--white);
+            font-family: inherit;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .country-trigger:hover,
+        .country-trigger.open {
+            border-color: var(--neon);
+            background: rgba(0,212,255,0.04);
+        }
+
+        .country-chevron {
+            font-size: 0.5rem;
+            opacity: 0.45;
+            margin-left: 2px;
+            transition: transform 0.25s;
+        }
+
+        .country-trigger.open .country-chevron { transform: rotate(180deg); }
+
+        .country-dropdown {
+            position: absolute;
+            top: calc(100% + 3px);
+            left: 0;
+            width: 275px;
+            background: #060606;
+            border: 1px solid rgba(0,212,255,0.25);
+            z-index: 300;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.9);
+        }
+
+        .country-dropdown.open { display: flex; }
+
+        .country-search {
+            padding: 0.6rem 0.9rem;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(0,212,255,0.1);
+            color: var(--white);
+            font-family: inherit;
+            font-size: 0.73rem;
+            outline: none;
+            letter-spacing: 1px;
+        }
+
+        .country-search::placeholder { color: #333; }
+
+        .country-list {
+            overflow-y: auto;
+            max-height: 200px;
+        }
+
+        .country-list::-webkit-scrollbar { width: 2px; }
+        .country-list::-webkit-scrollbar-thumb { background: var(--neon); }
+
+        .country-option {
+            padding: 0.5rem 0.9rem;
+            cursor: pointer;
+            font-size: 0.73rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            transition: background 0.15s, color 0.15s;
+            border-bottom: 1px solid rgba(0,212,255,0.04);
+        }
+
+        .country-option:hover { background: rgba(0,212,255,0.07); color: var(--white); }
+        .country-option.active { background: rgba(0,212,255,0.1); color: var(--neon); }
+
+        .c-code {
+            margin-left: auto;
+            font-size: 0.68rem;
+            color: rgba(0,212,255,0.5);
+            flex-shrink: 0;
+        }
+
+        .phone-number-input {
+            flex: 1;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(0,212,255,0.18);
+            color: var(--white);
+            padding: 0.85rem 1.1rem;
+            font-family: inherit;
+            font-size: 0.83rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            min-width: 0;
+        }
+
+        .phone-number-input:focus {
+            border-color: var(--neon);
+            box-shadow: 0 0 12px rgba(0,212,255,0.1);
+        }
+
+        .phone-number-input::placeholder { color: #333; }
+
         /* ── Footer ── */
         footer {
             padding: 2.2rem;
@@ -667,8 +788,23 @@
                             <input type="text" id="empresa" name="empresa" placeholder="Nombre de tu empresa" autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <label for="telefono">NÚMERO DE CONTACTO</label>
-                            <input type="tel" id="telefono" name="telefono" placeholder="+XX XXX XXX XXXX" required autocomplete="off">
+                            <label>NÚMERO DE CONTACTO</label>
+                            <div class="phone-group">
+                                <div class="country-select-wrapper">
+                                    <button type="button" class="country-trigger" id="countryTrigger">
+                                        <span id="selectedFlag">🇨🇴</span>
+                                        <span id="selectedCode">+57</span>
+                                        <span class="country-chevron">▼</span>
+                                    </button>
+                                    <div class="country-dropdown" id="countryDropdown">
+                                        <input type="text" class="country-search" id="countrySearch" placeholder="Buscar país...">
+                                        <div class="country-list" id="countryList"></div>
+                                    </div>
+                                </div>
+                                <input type="tel" class="phone-number-input" id="phoneNumberInput"
+                                    placeholder="3XX XXX XXXX" autocomplete="off">
+                            </div>
+                            <input type="hidden" name="telefono" id="telefonoFull">
                         </div>
                     </div>
                     <button type="submit" class="btn-submit">[ SOLICITAR ASESORÍA GRATUITA ]</button>
@@ -780,6 +916,108 @@
             }, { threshold: 0.5 });
             ioStat.observe(el);
         });
+
+        // ── Country Phone Selector ───────────────────────────────────
+        const COUNTRIES = [
+            { flag: '🇨🇴', name: 'Colombia',         code: '+57',  fmt: '### ### ####', len: 10 },
+            { flag: '🇺🇸', name: 'Estados Unidos',   code: '+1',   fmt: '(###) ###-####', len: 10 },
+            { flag: '🇲🇽', name: 'México',            code: '+52',  fmt: '## #### ####',  len: 10 },
+            { flag: '🇻🇪', name: 'Venezuela',         code: '+58',  fmt: '### ### ####',  len: 10 },
+            { flag: '🇦🇷', name: 'Argentina',         code: '+54',  fmt: '## #### ####',  len: 10 },
+            { flag: '🇨🇱', name: 'Chile',             code: '+56',  fmt: '# #### ####',   len: 9  },
+            { flag: '🇵🇪', name: 'Perú',              code: '+51',  fmt: '### ### ###',   len: 9  },
+            { flag: '🇧🇷', name: 'Brasil',            code: '+55',  fmt: '## ##### ####', len: 11 },
+            { flag: '🇪🇨', name: 'Ecuador',           code: '+593', fmt: '## ### ####',   len: 9  },
+            { flag: '🇧🇴', name: 'Bolivia',           code: '+591', fmt: '# ### ####',    len: 8  },
+            { flag: '🇵🇾', name: 'Paraguay',          code: '+595', fmt: '### ### ###',   len: 9  },
+            { flag: '🇺🇾', name: 'Uruguay',           code: '+598', fmt: '# ### ####',    len: 8  },
+            { flag: '🇵🇦', name: 'Panamá',            code: '+507', fmt: '#### ####',     len: 8  },
+            { flag: '🇨🇷', name: 'Costa Rica',        code: '+506', fmt: '#### ####',     len: 8  },
+            { flag: '🇬🇹', name: 'Guatemala',         code: '+502', fmt: '#### ####',     len: 8  },
+            { flag: '🇭🇳', name: 'Honduras',          code: '+504', fmt: '#### ####',     len: 8  },
+            { flag: '🇸🇻', name: 'El Salvador',       code: '+503', fmt: '#### ####',     len: 8  },
+            { flag: '🇳🇮', name: 'Nicaragua',         code: '+505', fmt: '#### ####',     len: 8  },
+            { flag: '🇩🇴', name: 'Rep. Dominicana',   code: '+1',   fmt: '(###) ###-####', len: 10 },
+            { flag: '🇨🇺', name: 'Cuba',              code: '+53',  fmt: '# ### ####',    len: 8  },
+            { flag: '🇪🇸', name: 'España',            code: '+34',  fmt: '### ### ###',   len: 9  },
+            { flag: '🇬🇧', name: 'Reino Unido',       code: '+44',  fmt: '#### ######',   len: 10 },
+            { flag: '🇩🇪', name: 'Alemania',          code: '+49',  fmt: '#### #######',  len: 11 },
+            { flag: '🇫🇷', name: 'Francia',           code: '+33',  fmt: '# ## ## ## ##', len: 9  },
+            { flag: '🇮🇹', name: 'Italia',            code: '+39',  fmt: '### ### ####',  len: 10 },
+            { flag: '🇵🇹', name: 'Portugal',          code: '+351', fmt: '### ### ###',   len: 9  },
+            { flag: '🇨🇦', name: 'Canadá',            code: '+1',   fmt: '(###) ###-####', len: 10 },
+        ];
+
+        let selCountry = COUNTRIES[0];
+
+        function formatPhone(digits) {
+            const fmt = selCountry.fmt;
+            let out = '', d = 0;
+            for (let i = 0; i < fmt.length && d < digits.length; i++) {
+                if (fmt[i] === '#') { out += digits[d++]; }
+                else if (d > 0) { out += fmt[i]; }
+            }
+            return out;
+        }
+
+        function renderCountries(filter) {
+            const list = document.getElementById('countryList');
+            const q = (filter || '').toLowerCase();
+            const matches = COUNTRIES.filter(c => c.name.toLowerCase().includes(q) || c.code.includes(q));
+            list.innerHTML = matches.map(c => `
+                <div class="country-option ${c === selCountry ? 'active' : ''}" data-code="${c.code}" data-name="${c.name}">
+                    <span>${c.flag}</span><span>${c.name}</span><span class="c-code">${c.code}</span>
+                </div>`).join('');
+            list.querySelectorAll('.country-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    selCountry = COUNTRIES.find(c => c.code === opt.dataset.code && c.name === opt.dataset.name);
+                    document.getElementById('selectedFlag').textContent = selCountry.flag;
+                    document.getElementById('selectedCode').textContent = selCountry.code;
+                    const ph = document.getElementById('phoneNumberInput');
+                    ph.placeholder = selCountry.fmt.replace(/#/g, 'X');
+                    ph.value = formatPhone(ph.value.replace(/\D/g, ''));
+                    closeCountryDD();
+                });
+            });
+        }
+
+        function openCountryDD() {
+            document.getElementById('countryDropdown').classList.add('open');
+            document.getElementById('countryTrigger').classList.add('open');
+            document.getElementById('countrySearch').value = '';
+            renderCountries();
+            document.getElementById('countrySearch').focus();
+        }
+
+        function closeCountryDD() {
+            document.getElementById('countryDropdown').classList.remove('open');
+            document.getElementById('countryTrigger').classList.remove('open');
+        }
+
+        document.getElementById('countryTrigger').addEventListener('click', e => {
+            e.stopPropagation();
+            document.getElementById('countryDropdown').classList.contains('open') ? closeCountryDD() : openCountryDD();
+        });
+
+        document.getElementById('countrySearch').addEventListener('input', e => renderCountries(e.target.value));
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.country-select-wrapper')) closeCountryDD();
+        });
+
+        document.getElementById('phoneNumberInput').addEventListener('input', e => {
+            const digits = e.target.value.replace(/\D/g, '').slice(0, selCountry.len);
+            const cursor = e.target.selectionStart;
+            e.target.value = formatPhone(digits);
+        });
+
+        document.querySelector('form[action="/registro"]').addEventListener('submit', e => {
+            const num = document.getElementById('phoneNumberInput').value.trim();
+            if (!num) { e.preventDefault(); document.getElementById('phoneNumberInput').focus(); return; }
+            document.getElementById('telefonoFull').value = `${selCountry.code} ${num}`;
+        });
+
+        renderCountries();
     </script>
 </body>
 </html>
