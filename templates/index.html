@@ -1379,6 +1379,76 @@
             z-index: 298;
         }
 
+        /* ── Custom project callout ── */
+        .custom-callout {
+            margin-top: 4rem;
+            padding: 0 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+        .custom-callout-line {
+            width: 100%;
+            max-width: 700px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon), transparent);
+            opacity: 0.4;
+        }
+        .custom-callout-body {
+            text-align: center;
+            max-width: 700px;
+        }
+        .custom-callout-label {
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            color: var(--neon);
+            margin-bottom: 0.8rem;
+            opacity: 0.7;
+        }
+        .custom-callout-title {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #e0f7ff;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+        .custom-callout-title span {
+            color: var(--neon);
+            text-shadow: 0 0 10px var(--neon);
+        }
+        .custom-callout-desc {
+            font-size: 0.82rem;
+            color: rgba(200,230,240,0.7);
+            line-height: 1.8;
+            letter-spacing: 1px;
+            margin-bottom: 1.8rem;
+        }
+        .custom-callout-btn {
+            display: inline-block;
+            padding: 0.85rem 2.2rem;
+            border: 1px solid var(--neon);
+            color: var(--neon);
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            position: relative;
+            overflow: hidden;
+            transition: color 0.3s;
+        }
+        .custom-callout-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: var(--neon);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+        .custom-callout-btn:hover::before { left: 0; }
+        .custom-callout-btn:hover { color: #000; }
+
         /* ── Footer ── */
         footer {
             padding: 2.2rem;
@@ -1441,7 +1511,7 @@
 
             <div class="hero-stats">
                 <div class="stat">
-                    <div class="stat-num" data-target="9" data-suffix="+">0</div>
+                    <div class="stat-num" data-target="11" data-suffix="+">0</div>
                     <div class="stat-label">SERVICIOS</div>
                 </div>
                 <div class="stat-divider"></div>
@@ -1558,6 +1628,32 @@
                 <p>Convertimos y estructuramos tus datos entre cualquier formato: PDF a Excel, extracción a base de datos, limpieza y pipelines de datos listos para usar.</p>
                 <span class="card-tag">PDF · EXCEL · SQL · ETL</span>
             </div>
+            <div class="card">
+                <div class="card-num">// 10</div>
+                <span class="card-icon">🖥️</span>
+                <h3>Scripts para PC</h3>
+                <p>Automatización directa en tu computadora: renombrar miles de archivos, organizar carpetas, backups automáticos e integrar programas entre sí sin intervención manual.</p>
+                <span class="card-tag">PYTHON · BATCH · POWERSHELL · WIN32</span>
+            </div>
+            <div class="card">
+                <div class="card-num">// 11</div>
+                <span class="card-icon">🐍</span>
+                <h3>Desarrollo Python</h3>
+                <p>Programas Python a medida: procesamiento de datos, herramientas CLI con interfaz, análisis con pandas y numpy, integraciones con APIs y lógica de negocio personalizada.</p>
+                <span class="card-tag">PYTHON · PANDAS · CLI · API · OOP</span>
+            </div>
+        </div>
+
+        <!-- Custom request callout -->
+        <div class="custom-callout">
+            <div class="custom-callout-line"></div>
+            <div class="custom-callout-body">
+                <div class="custom-callout-label">// ¿ALGO MÁS?</div>
+                <h3 class="custom-callout-title">SIEMPRE PODEMOS — <span>TODO LO QUE TE PROPONGAS</span></h3>
+                <p class="custom-callout-desc">¿Tienes un desarrollo específico en mente que no está en nuestras opciones? Danos una descripción breve y lo verificamos. Si existe una manera de construirlo, nosotros la encontramos.</p>
+                <a href="#contacto" class="custom-callout-btn">[ DESCRIBIR MI PROYECTO ]</a>
+            </div>
+            <div class="custom-callout-line"></div>
         </div>
     </section>
 
@@ -2158,6 +2254,46 @@
                     { label: 'VELOCIDAD', value: 'Convierte cientos de archivos en el tiempo que toma abrir uno manualmente' },
                     { label: 'CALIDAD', value: 'Datos limpios, consistentes y sin duplicados listos para análisis inmediato' },
                     { label: 'ESCALA', value: 'El mismo proceso que tarda una semana ahora se ejecuta en minutos sin errores' },
+                ]
+            },
+            {
+                num: '// 10', icon: '🖥️', title: 'Scripts para PC',
+                tag: 'PYTHON · BATCH · POWERSHELL · WIN32',
+                desc: 'Automatización que corre directamente en tu computadora sin depender de servidores ni internet. Renombramos miles de archivos, organizamos carpetas por reglas, hacemos backups programados e integramos aplicaciones de escritorio entre sí. Tu PC trabajando sola mientras tú te enfocas en lo que importa.',
+                automate: [
+                    'Organización y renombrado masivo de archivos siguiendo reglas personalizadas de negocio',
+                    'Backups automáticos programados hacia carpetas locales, externos o nube según horario',
+                    'Integración entre aplicaciones de escritorio: copiar de Excel a Word, de PDF a formulario',
+                    'Limpieza automática de carpetas temporales, duplicados y archivos obsoletos',
+                    'Scripts de instalación y configuración que despliegan entornos completos en un clic',
+                    'Monitoreo de archivos y carpetas con alertas automáticas ante cambios o nuevos archivos',
+                ],
+                examples: ['Organización de descargas', 'Backup automático diario', 'Renombrado masivo', 'Instalador personalizado', 'Monitor de carpetas', 'Integración Office'],
+                impact: [
+                    { label: 'TIEMPO', value: 'Tareas de gestión de archivos que tomaban horas ahora se ejecutan en segundos' },
+                    { label: 'SIN ERRORES', value: 'Nunca más archivos perdidos, mal nombrados o backups olvidados por el factor humano' },
+                    { label: 'LOCAL', value: 'Corre en tu máquina sin depender de internet, servidores ni suscripciones externas' },
+                    { label: 'CONTROL', value: 'Tu computadora hace exactamente lo que tú defines, cuando tú lo defines, siempre' },
+                ]
+            },
+            {
+                num: '// 11', icon: '🐍', title: 'Desarrollo Python',
+                tag: 'PYTHON · PANDAS · CLI · API · OOP',
+                desc: 'Programas Python a medida para cualquier necesidad: herramientas de línea de comandos con interfaz visual (TUI), análisis y visualización de datos con pandas y matplotlib, integración con cualquier API externa, procesamiento de archivos en lote y lógica de negocio encapsulada en módulos reutilizables y mantenibles.',
+                automate: [
+                    'Herramientas CLI interactivas con menús, validaciones y reportes en terminal o GUI',
+                    'Análisis estadístico y visualización de datos con pandas, numpy y matplotlib',
+                    'Consumo y publicación de APIs REST con manejo de autenticación, paginación y errores',
+                    'Procesamiento en lote de miles de archivos: texto, imágenes, Excel o bases de datos',
+                    'Módulos reutilizables con pruebas unitarias y documentación para equipos de desarrollo',
+                    'Integración con servicios cloud: AWS S3, Google Sheets, Notion, Slack y más',
+                ],
+                examples: ['Analizador de ventas', 'Herramienta CLI custom', 'Consumidor de API', 'Procesador de imágenes', 'Módulo de reportes', 'Dashboard en terminal'],
+                impact: [
+                    { label: 'VERSATILIDAD', value: 'Una solución Python puede conectar, procesar y automatizar prácticamente cualquier flujo' },
+                    { label: 'CALIDAD', value: 'Código limpio, documentado y testeado que tu equipo puede mantener y escalar' },
+                    { label: 'VELOCIDAD', value: 'De idea a herramienta funcional en días, no semanas, con iteraciones rápidas' },
+                    { label: 'POTENCIA', value: 'El ecosistema más rico del mundo: miles de librerías para cualquier problema técnico' },
                 ]
             },
         ];
