@@ -2,14 +2,54 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>GIA - Automatizaciones</title>
+    <style>
+        :root { --neon-green: #00ff41; --bg-dark: #0a0a0a; }
+        body { background: var(--bg-dark); color: #c0c0c0; font-family: 'Courier New', monospace; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; }
+        h1 { text-align: center; color: var(--neon-green); text-shadow: 0 0 10px rgba(0, 255, 65, 0.5); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 30px; }
+        .card { 
+            padding: 20px; border: 1px solid var(--neon-green); 
+            background: rgba(0, 0, 0, 0.8); transition: 0.3s;
+            box-shadow: 0 0 5px rgba(0, 255, 65, 0.2);
+        }
+        .card:hover { box-shadow: 0 0 20px rgba(0, 255, 65, 0.4); transform: scale(1.02); }
+        .card h3 { color: var(--neon-green); margin-top: 0; }
+        .btn { 
+            display: block; width: fit-content; margin: 40px auto; padding: 15px 30px;
+            background: transparent; border: 2px solid var(--neon-green); color: var(--neon-green);
+            text-decoration: none; font-weight: bold; transition: 0.3s;
+        }
+        .btn:hover { background: var(--neon-green); color: black; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+        .cursor { display: inline-block; width: 10px; height: 20px; background: var(--neon-green); animation: blink 1s infinite; }
+    </style>
 </head>
-<body style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background-color: #f4f4f9;">
-    <h1>Soluciones y Automatizaciones a Medida</h1>
-    <p>Optimiza tu tiempo con bots, scripts y herramientas personalizadas de alta eficiencia.</p>
-    <br>
-    <a href="/registro" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">
-        Ingresar al Portafolio
-    </a>
+<body>
+    <div class="container">
+        <h1>SISTEMA OPERATIVO: AUT<span class="cursor"></span></h1>
+        <p style="text-align: center;">> INICIANDO MÓDULOS DE AUTOMATIZACIÓN...</p>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>[01] SCRAPING & WEB BOTS</h3>
+                <p>Navegación automatizada, extracción de datos web y exportación a reportes Excel en tiempo real.</p>
+            </div>
+            <div class="card">
+                <h3>[02] ANÁLISIS ESTADÍSTICO</h3>
+                <p>Procesamiento de datos de mercado, cálculo de tendencias y algoritmos de modelado predictivo.</p>
+            </div>
+            <div class="card">
+                <h3>[03] TELEGRAM INTEGRATION</h3>
+                <p>Pipeline de comunicación directa. Notificaciones, alertas y control remoto vía bots de Telegram.</p>
+            </div>
+            <div class="card">
+                <h3>[04] GESTIÓN DOCUMENTAL</h3>
+                <p>Unión, escaneo y procesamiento masivo de archivos PDF mediante herramientas de automatización.</p>
+            </div>
+        </div>
+
+        <a href="/registro" class="btn">[ INGRESAR A SOLUCIONES ]</a>
+    </div>
 </body>
 </html>
