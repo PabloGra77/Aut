@@ -702,8 +702,9 @@
             max-width: 660px;
             width: 100%;
             max-height: 88vh;
-            overflow-y: auto;
-            padding: 2.5rem 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             opacity: 0;
             transform: translateY(28px);
             transition: opacity 0.35s ease, transform 0.35s ease;
@@ -715,12 +716,27 @@
             transform: translateY(0);
         }
 
-        .modal-box::-webkit-scrollbar { width: 2px; }
-        .modal-box::-webkit-scrollbar-thumb { background: var(--neon); }
+        .modal-head {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: flex-end;
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid rgba(0,212,255,0.08);
+            background: #060606;
+        }
+
+        .modal-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem 2.5rem 2.5rem;
+            overscroll-behavior: contain;
+        }
+
+        .modal-scroll::-webkit-scrollbar { width: 4px; }
+        .modal-scroll::-webkit-scrollbar-track { background: rgba(0,212,255,0.04); }
+        .modal-scroll::-webkit-scrollbar-thumb { background: var(--neon); border-radius: 2px; }
 
         .modal-close {
-            position: absolute;
-            top: 1.1rem; right: 1.1rem;
             background: none;
             border: 1px solid rgba(0,212,255,0.2);
             color: var(--gray);
@@ -1374,7 +1390,7 @@
 
             <div class="hero-stats">
                 <div class="stat">
-                    <div class="stat-num" data-target="7" data-suffix="+">0</div>
+                    <div class="stat-num" data-target="9" data-suffix="+">0</div>
                     <div class="stat-label">SERVICIOS</div>
                 </div>
                 <div class="stat-divider"></div>
@@ -1476,6 +1492,20 @@
                 <h3>Apps & Branding</h3>
                 <p>Desarrollo de aplicaciones móviles con personalización completa: diseño de logos, paleta de colores e identidad de marca.</p>
                 <span class="card-tag">FLUTTER · FIGMA · BRANDING</span>
+            </div>
+            <div class="card">
+                <div class="card-num">// 08</div>
+                <span class="card-icon">🔧</span>
+                <h3>Soporte & Mantenimiento</h3>
+                <p>Si tu bot, programa o sistema falla, nuestros desarrolladores diagnostican y corrigen el problema. También integramos nuevas funcionalidades y servicios a soluciones ya existentes.</p>
+                <span class="card-tag">DEBUGGING · UPDATES · INTEGRACIÓN</span>
+            </div>
+            <div class="card">
+                <div class="card-num">// 09</div>
+                <span class="card-icon">🗃️</span>
+                <h3>Migración & Datos</h3>
+                <p>Convertimos y estructuramos tus datos entre cualquier formato: PDF a Excel, extracción a base de datos, limpieza y pipelines de datos listos para usar.</p>
+                <span class="card-tag">PDF · EXCEL · SQL · ETL</span>
             </div>
         </div>
     </section>
@@ -1632,7 +1662,10 @@
     <div id="serviceModal" class="service-modal">
         <div class="modal-overlay"></div>
         <div class="modal-box">
-            <button class="modal-close" id="modalClose">✕ CERRAR</button>
+            <div class="modal-head">
+                <button class="modal-close" id="modalClose">✕ CERRAR</button>
+            </div>
+            <div class="modal-scroll">
             <span class="modal-icon" id="modalIcon"></span>
             <div class="modal-num" id="modalNum"></div>
             <h2 class="modal-title" id="modalTitle"></h2>
@@ -1686,6 +1719,7 @@
                 </div>
             </div>
             <a href="#contacto" class="modal-cta" id="modalCta">[ QUIERO ESTE SERVICIO — ASESORÍA GRATUITA ]</a>
+            </div><!-- end modal-scroll -->
         </div>
     </div>
 
@@ -2031,6 +2065,46 @@
                     { label: 'FIDELIZACIÓN', value: 'Sistema automático de notificaciones y recompensas que retiene y activa clientes' },
                     { label: 'AUTOMATIZA', value: 'Pedidos, reservas y pagos gestionados automáticamente sin intervención humana' },
                     { label: 'MARCA', value: 'Identidad visual cohesiva que genera confianza, diferenciación y recordación' },
+                ]
+            },
+            {
+                num: '// 08', icon: '🔧', title: 'Soporte & Mantenimiento',
+                tag: 'DEBUGGING · UPDATES · INTEGRACIÓN',
+                desc: 'Si tu bot, programa o sistema desarrollado falla por cualquier motivo, nuestros desarrolladores lo diagnostican, corrigen y restauran. También expandimos soluciones existentes integrando nuevas APIs, módulos o servicios según tus necesidades en crecimiento. Nunca quedas solo con un sistema que no funciona.',
+                automate: [
+                    'Diagnóstico rápido de fallos en bots, scripts o aplicaciones con reporte detallado',
+                    'Corrección de errores críticos y restauración del funcionamiento normal del sistema',
+                    'Actualizaciones y parches para adaptarse a cambios en sitios web o APIs externas',
+                    'Integración de nuevos servicios o funcionalidades a programas ya existentes',
+                    'Optimización de bots lentos o ineficientes para mejorar velocidad y estabilidad',
+                    'Monitoreo continuo con alertas automáticas ante caídas o comportamientos anómalos',
+                ],
+                examples: ['Reparación de bots', 'Actualización de scraper', 'Nueva API integrada', 'Optimización de rendimiento', 'Parche de urgencia', 'Monitoreo 24/7'],
+                impact: [
+                    { label: 'CONTINUIDAD', value: 'Tu negocio no se detiene: tiempo de inactividad mínimo ante cualquier falla' },
+                    { label: 'VELOCIDAD', value: 'Nuestros desarrolladores actúan rápidamente para restaurar el servicio' },
+                    { label: 'EVOLUCIÓN', value: 'Tu sistema crece con tu negocio: nuevas integraciones cuando las necesites' },
+                    { label: 'PROTECCIÓN', value: 'Inversión protegida: tu solución siempre funcionando y al día' },
+                ]
+            },
+            {
+                num: '// 09', icon: '🗃️', title: 'Migración & Datos',
+                tag: 'PDF · EXCEL · SQL · ETL',
+                desc: 'Transformamos, migramos y estructuramos tus datos entre cualquier formato o sistema. Desde convertir cientos de PDFs a Excel con OCR hasta construir bases de datos limpias desde información dispersa. Automatizamos pipelines de datos completos para que tu información siempre esté donde la necesitas, limpia, organizada y lista para usar.',
+                automate: [
+                    'Conversión masiva de PDFs a Excel, CSV o base de datos con extracción OCR de textos',
+                    'Migración de datos entre sistemas: Excel a SQL, Access a PostgreSQL, hojas a APIs',
+                    'Limpieza y normalización automática de bases de datos con datos duplicados o inconsistentes',
+                    'Construcción de pipelines ETL que extraen, transforman y cargan datos automáticamente',
+                    'Generación automática de reportes consolidados desde múltiples fuentes de datos',
+                    'Estructuración de información dispersa en bases de datos relacionales optimizadas',
+                ],
+                examples: ['PDF a Excel masivo', 'Limpieza de base de datos', 'Migración a SQL', 'Pipeline ETL', 'Consolidación de fuentes', 'Reporte automatizado'],
+                impact: [
+                    { label: 'REEMPLAZA A', value: 'Personal copiando y pegando datos manualmente entre archivos horas al día' },
+                    { label: 'VELOCIDAD', value: 'Convierte cientos de archivos en el tiempo que toma abrir uno manualmente' },
+                    { label: 'CALIDAD', value: 'Datos limpios, consistentes y sin duplicados listos para análisis inmediato' },
+                    { label: 'ESCALA', value: 'El mismo proceso que tarda una semana ahora se ejecuta en minutos sin errores' },
                 ]
             },
         ];
