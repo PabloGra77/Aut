@@ -8,18 +8,19 @@ app = Flask(__name__)
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
 CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 
-def notificar_telegram(nombre, email, empresa, telefono):
+def notificar_telegram(nombre, email, empresa, telefono, descripcion=''):
     # Validamos que tengamos las credenciales
     if not TOKEN or not CHAT_ID:
         print("Error: No se han configurado las variables de entorno.")
         return
 
     empresa_str = f"\n🏢 Empresa: {empresa}" if empresa else ""
+    desc_str = f"\n📋 Proyecto: {descripcion}" if descripcion else ""
     mensaje = (
         f"🚀 ¡Nuevo lead!\n"
         f"👤 Nombre: {nombre}\n"
         f"📧 Email: {email}{empresa_str}\n"
-        f"📞 Teléfono: {telefono}"
+        f"📞 Teléfono: {telefono}{desc_str}"
     )
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": mensaje}
@@ -41,9 +42,10 @@ def registro():
         email = request.form.get('email', '').strip()
         empresa = request.form.get('empresa', '').strip()
         telefono = request.form.get('telefono', '').strip()
+        descripcion = request.form.get('descripcion', '').strip()
         
         # Disparamos la notificación
-        notificar_telegram(nombre, email, empresa, telefono)
+        notificar_telegram(nombre, email, empresa, telefono, descripcion)
         
         return render_template('registro.html')
     return render_template('index.html')
