@@ -1329,6 +1329,56 @@
         }
         .acquire-text p { font-size: 0.71rem; color: var(--gray); line-height: 1.65; }
 
+        /* ── Scroll progress bar ── */
+        .scroll-bar {
+            position: fixed;
+            top: 0; left: 0;
+            height: 2px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--neon), rgba(0,212,255,0.5));
+            box-shadow: 0 0 10px var(--neon), 0 0 20px rgba(0,212,255,0.3);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        /* ── Hero floating particles ── */
+        .hero-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--neon);
+            box-shadow: 0 0 6px var(--neon);
+            pointer-events: none;
+            z-index: 0;
+            animation: particleFloat linear infinite;
+        }
+        @keyframes particleFloat {
+            0%   { transform: translateY(0); opacity: 0; }
+            15%  { opacity: 0.8; }
+            85%  { opacity: 0.4; }
+            100% { transform: translateY(-130px); opacity: 0; }
+        }
+
+        /* ── Button ripple ── */
+        .modal-cta { position: relative; overflow: hidden; }
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0,212,255,0.25);
+            transform: scale(0);
+            animation: rippleExpand 0.65s ease-out forwards;
+            pointer-events: none;
+        }
+        @keyframes rippleExpand { to { transform: scale(4); opacity: 0; } }
+
+        /* ── Cursor trail ── */
+        .cursor-trail {
+            position: fixed;
+            border-radius: 50%;
+            background: var(--neon);
+            pointer-events: none;
+            z-index: 298;
+        }
+
         /* ── Footer ── */
         footer {
             padding: 2.2rem;
@@ -1348,6 +1398,7 @@
     <div class="cursor-dot" id="cursorDot"></div>
     <div class="cursor-ring" id="cursorRing"></div>
     <div class="page-scan"></div>
+    <div class="scroll-bar" id="scrollBar"></div>
 
     <!-- Nav -->
     <nav>
@@ -1798,15 +1849,17 @@
 
         // ── Intersection Observer ────────────────────────────────────
         const observer = new IntersectionObserver((entries) => {
+            let cardIdx = 0;
             entries.forEach(entry => {
                 if (!entry.isIntersecting) return;
-                entry.target.classList.add('visible');
-
-                // Trigger stat counters once visible
-                if (entry.target.classList.contains('stat')) {
-                    animateCounter(entry.target.querySelector('.stat-num'));
-                }
-
+                const isCard = entry.target.classList.contains('card');
+                const delay = isCard ? (cardIdx++) * 90 : 0;
+                setTimeout(() => {
+                    entry.target.classList.add('visible');
+                    if (entry.target.classList.contains('stat')) {
+                        animateCounter(entry.target.querySelector('.stat-num'));
+                    }
+                }, delay);
                 observer.unobserve(entry.target);
             });
         }, { threshold: 0.18 });
@@ -2264,6 +2317,122 @@
                     botsEl.textContent = String(n).padStart(2, '0');
                 }, 4000);
             }
+        })();
+
+        // ── Scroll progress bar ───────────────────────────────────────────
+        (function() {
+            const bar = document.getElementById('scrollBar');
+            if (!bar) return;
+            window.addEventListener('scroll', () => {
+                const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+                bar.style.width = Math.min(pct, 100).toFixed(1) + '%';
+            }, { passive: true });
+        })();
+
+        // ── Hero floating particles ───────────────────────────────────────
+        (function() {
+            const hero = document.querySelector('.hero');
+            if (!hero) return;
+            for (let i = 0; i < 22; i++) {
+                const p = document.createElement('div');
+                p.className = 'hero-particle';
+                const size = (1 + Math.random() * 2.2).toFixed(1);
+                p.style.cssText = [
+                    `left:${(Math.random() * 100).toFixed(1)}%`,
+                    `top:${(10 + Math.random() * 80).toFixed(1)}%`,
+                    `width:${size}px`,
+                    `height:${size}px`,
+                    `animation-delay:${(Math.random() * 12).toFixed(1)}s`,
+                    `animation-duration:${(7 + Math.random() * 10).toFixed(1)}s`,
+                ].join(';');
+                hero.appendChild(p);
+            }
+        })();
+
+        // ── Letter scramble on section titles ────────────────────────────
+        (function() {
+            const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&─┼';
+            function scramble(el, text, ms) {
+                let f = 0, total = Math.round(ms / 28);
+                const id = setInterval(() => {
+                    el.textContent = text.split('').map((c, i) => {
+                        if (c === ' ') return ' ';
+                        return f / total > i / text.length ? c : CHARS[Math.floor(Math.random() * CHARS.length)];
+                    }).join('');
+                    if (++f > total) { el.textContent = text; clearInterval(id); }
+                }, 28);
+            }
+            const obs = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                    if (e.isIntersecting && !e.target.dataset.sc) {
+                        e.target.dataset.sc = '1';
+                        const sp = e.target.querySelector('span');
+                        if (sp) scramble(sp, sp.textContent, 900);
+                    }
+                });
+            }, { threshold: 0.6 });
+            document.querySelectorAll('.section-title').forEach(el => obs.observe(el));
+        })();
+
+        // ── Neon flicker on hero title ────────────────────────────────────
+        (function() {
+            const t = document.querySelector('.glitch');
+            if (!t) return;
+            function flicker() {
+                setTimeout(() => {
+                    t.style.transition = 'none';
+                    t.style.opacity = '0.06';
+                    setTimeout(() => {
+                        t.style.opacity = '1';
+                        setTimeout(() => {
+                            t.style.opacity = '0.2';
+                            setTimeout(() => { t.style.opacity = '1'; flicker(); }, 60);
+                        }, 70);
+                    }, 55);
+                }, 5000 + Math.random() * 10000);
+            }
+            flicker();
+        })();
+
+        // ── Button ripple ─────────────────────────────────────────────────
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-submit, .modal-cta');
+            if (!btn) return;
+            const r = document.createElement('span');
+            r.className = 'ripple';
+            const rect = btn.getBoundingClientRect();
+            const sz = Math.max(rect.width, rect.height);
+            r.style.cssText = `width:${sz}px;height:${sz}px;left:${e.clientX - rect.left - sz / 2}px;top:${e.clientY - rect.top - sz / 2}px`;
+            btn.appendChild(r);
+            setTimeout(() => r.remove(), 700);
+        });
+
+        // ── Cursor neon trail ─────────────────────────────────────────────
+        (function() {
+            if ('ontouchstart' in window) return;
+            const N = 7;
+            const sizes = [4, 3.5, 3, 2.5, 2, 1.5, 1];
+            const pos = Array.from({ length: N }, () => ({ x: -50, y: -50 }));
+            const dots = sizes.map((s, i) => {
+                const d = document.createElement('div');
+                d.className = 'cursor-trail';
+                d.style.cssText = `width:${s}px;height:${s}px;opacity:${(0.55 - i * 0.07).toFixed(2)}`;
+                document.body.appendChild(d);
+                return d;
+            });
+            let mx = -50, my = -50;
+            window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
+            (function tick() {
+                pos[0].x = mx; pos[0].y = my;
+                for (let i = N - 1; i > 0; i--) {
+                    pos[i].x += (pos[i - 1].x - pos[i].x) * 0.22;
+                    pos[i].y += (pos[i - 1].y - pos[i].y) * 0.22;
+                }
+                dots.forEach((d, i) => {
+                    d.style.transform = `translate(${pos[i].x - sizes[i] / 2}px, ${pos[i].y - sizes[i] / 2}px)`;
+                });
+                requestAnimationFrame(tick);
+            })();
         })();
 
     </script>
