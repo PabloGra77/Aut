@@ -4,19 +4,29 @@ import requests
 
 app = Flask(__name__)
 
-# Tus credenciales integradas
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
-TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+# Configuración usando variables de entorno (Las que pusiste en Render)
+TOKEN = os.environ.get("TELEGRAM_TOKEN")
+CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 
-def notificar_telegram(nombre, email):
-    mensaje = f"🚀 ¡Nuevo lead de automatización!\n👤 Nombre: {nombre}\n📧 Email: {email}"
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": mensaje}
-    
+def notificar_telegram(nombre, email, empresa, telefono):
+    # Validamos que tengamos las credenciales
+    if not TOKEN or not CHAT_ID:
+        print("Error: No se han configurado las variables de entorno.")
+        return
+
+    empresa_str = f"\n🏢 Empresa: {empresa}" if empresa else ""
+    mensaje = (
+        f"🚀 ¡Nuevo lead!\n"
+        f"👤 Nombre: {nombre}\n"
+        f"📧 Email: {email}{empresa_str}\n"
+        f"📞 Teléfono: {telefono}"
+    )
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+    payload = {"chat_id": CHAT_ID, "text": mensaje}
+
     try:
         response = requests.post(url, data=payload)
-        # Esto imprimirá en la consola lo que Telegram responde (sea bueno o malo)
-        print("Respuesta de Telegram:", response.text) 
+        print("Respuesta de Telegram:", response.text)
     except Exception as e:
         print(f"Error grave al conectar: {e}")
 
@@ -27,16 +37,18 @@ def inicio():
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
     if request.method == 'POST':
-        nombre = request.form.get('nombre')
-        email = request.form.get('email')
+        nombre = request.form.get('nombre', '').strip()
+        email = request.form.get('email', '').strip()
+        empresa = request.form.get('empresa', '').strip()
+        telefono = request.form.get('telefono', '').strip()
         
-        # Disparamos la notificación a Telegram
-        notificar_telegram(nombre, email)
+        # Disparamos la notificación
+        notificar_telegram(nombre, email, empresa, telefono)
         
-        return f"¡Registro exitoso para {nombre}! Revisa tu Telegram celular 😎"
-        
-    return render_template('registro.html')
+        return render_template('registro.html')
+    return render_template('index.html')
 
 if __name__ == '__main__':
-    # Usamos 0.0.0.0 para que Docker pueda exponer el puerto correctamente
-    app.run(host='0.0.0.0', port=5000)
+    # Render asigna el puerto automáticamente, si no, usamos el 5000
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
