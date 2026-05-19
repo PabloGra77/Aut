@@ -4,8 +4,8 @@ import requests
 app = Flask(__name__)
 
 # Tus credenciales integradas
-TELEGRAM_TOKEN = "8533776743:AAFYJE1JHpZH0VT7A-GI0G_kvsBXH-iNIds"
-TELEGRAM_CHAT_ID = "7574554365"
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 
 def notificar_telegram(nombre, email):
     mensaje = f"🚀 ¡Nuevo lead de automatización!\n👤 Nombre: {nombre}\n📧 Email: {email}"
