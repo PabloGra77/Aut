@@ -72,9 +72,27 @@
             font-size: 0.72rem;
             letter-spacing: 3px;
             transition: color 0.3s;
+            position: relative;
         }
 
-        .nav-links a:hover { color: var(--neon); }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -3px; left: 0;
+            width: 0; height: 1px;
+            background: var(--neon);
+            box-shadow: 0 0 5px var(--neon);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active { color: var(--neon); }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+        @media (max-width: 640px) {
+            nav { padding: 1rem 1.2rem; }
+            .nav-links { gap: 1.4rem; }
+            .nav-links a { font-size: 0.62rem; letter-spacing: 2px; }
+        }
 
         /* ── Sections ── */
         section { position: relative; z-index: 1; }
@@ -371,7 +389,7 @@
         .card:hover {
             border-color: rgba(0,212,255,0.55);
             box-shadow: 0 0 35px rgba(0,212,255,0.08), inset 0 0 30px rgba(0,212,255,0.02);
-            transform: translateY(-6px) !important;
+            transform: translateY(-6px);
         }
 
         .card-num {
@@ -634,6 +652,467 @@
 
         .phone-number-input::placeholder { color: #333; }
 
+        /* ── Cards clickable hint ── */
+        .card { cursor: pointer; }
+
+        .card-expand {
+            position: absolute;
+            bottom: 1rem; right: 1.1rem;
+            font-size: 0.55rem;
+            color: rgba(0,212,255,0.3);
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .card:hover .card-expand { color: var(--neon); }
+
+        /* ── Service Modal ── */
+        .service-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .service-modal.open {
+            visibility: visible;
+            pointer-events: all;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .service-modal.open .modal-overlay { opacity: 1; }
+
+        .modal-box {
+            position: relative;
+            background: #060606;
+            border: 1px solid rgba(0,212,255,0.3);
+            max-width: 660px;
+            width: 100%;
+            max-height: 88vh;
+            overflow-y: auto;
+            padding: 2.5rem 2.5rem 2rem;
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            box-shadow: 0 0 80px rgba(0,212,255,0.07), inset 0 0 40px rgba(0,212,255,0.01);
+        }
+
+        .service-modal.open .modal-box {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .modal-box::-webkit-scrollbar { width: 2px; }
+        .modal-box::-webkit-scrollbar-thumb { background: var(--neon); }
+
+        .modal-close {
+            position: absolute;
+            top: 1.1rem; right: 1.1rem;
+            background: none;
+            border: 1px solid rgba(0,212,255,0.2);
+            color: var(--gray);
+            font-family: inherit;
+            font-size: 0.62rem;
+            padding: 0.28rem 0.65rem;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .modal-close:hover { border-color: var(--neon); color: var(--neon); }
+
+        .modal-icon {
+            font-size: 2.6rem;
+            display: block;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 0 10px rgba(0,212,255,0.5));
+        }
+
+        .modal-num {
+            font-size: 0.6rem;
+            color: rgba(0,212,255,0.45);
+            letter-spacing: 3px;
+            margin-bottom: 0.35rem;
+        }
+
+        .modal-title {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            color: var(--neon);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 25px rgba(0,212,255,0.3);
+            padding-right: 4rem;
+        }
+
+        .modal-section { margin-bottom: 1.7rem; }
+
+        .modal-section-label {
+            font-size: 0.6rem;
+            color: rgba(0,212,255,0.55);
+            letter-spacing: 4px;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.45rem;
+            border-bottom: 1px solid rgba(0,212,255,0.08);
+        }
+
+        .modal-desc {
+            font-size: 0.79rem;
+            color: var(--gray);
+            line-height: 1.9;
+        }
+
+        .modal-automate-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .modal-automate-list li {
+            font-size: 0.76rem;
+            color: var(--gray);
+            padding-left: 1.3rem;
+            position: relative;
+            line-height: 1.65;
+        }
+
+        .modal-automate-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--neon);
+        }
+
+        .modal-examples {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.55rem;
+        }
+
+        @media (max-width: 480px) { .modal-examples { grid-template-columns: 1fr; } }
+
+        .modal-example-tag {
+            font-size: 0.67rem;
+            color: rgba(0,212,255,0.65);
+            border: 1px solid rgba(0,212,255,0.16);
+            padding: 0.42rem 0.8rem;
+            background: rgba(0,212,255,0.025);
+            letter-spacing: 0.5px;
+            line-height: 1.5;
+        }
+
+        .modal-cta {
+            display: block;
+            margin-top: 2rem;
+            padding: 1rem;
+            border: 1px solid var(--neon);
+            color: var(--neon);
+            text-align: center;
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .modal-cta:hover { background: var(--neon); color: #000; }
+
+        /* ── Custom cursor ── */
+        .cursor-dot {
+            position: fixed;
+            width: 6px; height: 6px;
+            background: var(--neon);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 8px var(--neon), 0 0 18px rgba(0,212,255,0.3);
+            transition: width 0.18s, height 0.18s, opacity 0.3s;
+        }
+
+        .cursor-ring {
+            position: fixed;
+            width: 28px; height: 28px;
+            border: 1px solid rgba(0,212,255,0.45);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.25s, border-color 0.2s, opacity 0.3s;
+        }
+
+        /* ── Hero CTA button ── */
+        .hero-cta {
+            display: inline-block;
+            margin-top: 2.8rem;
+            padding: 0.9rem 2.6rem;
+            border: 1px solid var(--neon);
+            color: var(--neon);
+            text-decoration: none;
+            font-family: inherit;
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            transition: color 0.3s;
+            animation: fadeDown 0.8s 0.8s ease both;
+        }
+
+        .hero-cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--neon);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.35s ease;
+            z-index: -1;
+        }
+
+        .hero-cta:hover::before { transform: scaleX(1); }
+        .hero-cta:hover { color: #000; }
+
+        .hero-cta::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border: 1px solid rgba(0,212,255,0.4);
+            animation: ctaRing 2.5s ease-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes ctaRing {
+            0%   { opacity: 0.7; transform: scale(1);    }
+            100% { opacity: 0;   transform: scale(1.08); }
+        }
+
+        /* ── Marquee strip ── */
+        .marquee-strip {
+            overflow: hidden;
+            border-top: 1px solid rgba(0,212,255,0.07);
+            border-bottom: 1px solid rgba(0,212,255,0.07);
+            padding: 0.6rem 0;
+            background: rgba(0,212,255,0.015);
+            position: relative;
+            z-index: 1;
+        }
+
+        .marquee-track {
+            display: flex;
+            width: max-content;
+            animation: marqueeScroll 38s linear infinite;
+        }
+
+        .marquee-item {
+            font-size: 0.6rem;
+            color: rgba(0,212,255,0.32);
+            letter-spacing: 4px;
+            padding: 0 2rem;
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
+
+        .marquee-sep { color: rgba(0,212,255,0.17); align-self: center; }
+
+        @keyframes marqueeScroll {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+        }
+
+        /* ── Benefits section ── */
+        .benefits {
+            padding: 7rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.4rem;
+            margin-top: 3.5rem;
+        }
+
+        .benefit-card {
+            background: rgba(0,0,0,0.45);
+            border: 1px solid rgba(0,212,255,0.12);
+            padding: 2rem 1.8rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.3s;
+        }
+
+        .benefit-card.visible { opacity: 1; transform: translateY(0); }
+        .benefit-card:nth-child(1) { transition-delay: 0.0s; }
+        .benefit-card:nth-child(2) { transition-delay: 0.1s; }
+        .benefit-card:nth-child(3) { transition-delay: 0.2s; }
+        .benefit-card:nth-child(4) { transition-delay: 0.3s; }
+        .benefit-card:hover { border-color: rgba(0,212,255,0.35); }
+
+        .benefit-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .benefit-icon { font-size: 1.9rem; filter: drop-shadow(0 0 8px rgba(0,212,255,0.4)); }
+
+        .benefit-pct-display {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--neon);
+            text-shadow: 0 0 18px rgba(0,212,255,0.4);
+            letter-spacing: 2px;
+            line-height: 1;
+        }
+
+        .benefit-title {
+            font-size: 0.76rem;
+            color: var(--white);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .benefit-desc {
+            font-size: 0.73rem;
+            color: var(--gray);
+            line-height: 1.85;
+            margin-bottom: 1.4rem;
+        }
+
+        .benefit-bar-wrap { height: 1px; background: rgba(0,212,255,0.08); }
+
+        .benefit-bar {
+            height: 2px;
+            margin-top: -0.5px;
+            background: linear-gradient(90deg, var(--neon), rgba(0,212,255,0.3));
+            width: 0%;
+            transition: width 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 8px var(--neon);
+            position: relative;
+        }
+
+        .benefit-bar::after {
+            content: '';
+            position: absolute;
+            right: -1px; top: -3px;
+            width: 6px; height: 6px;
+            background: var(--neon);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--neon);
+        }
+
+        /* ── Process section ── */
+        .process {
+            padding: 7rem 2rem;
+            background: rgba(0,212,255,0.01);
+            border-top: 1px solid rgba(0,212,255,0.06);
+            border-bottom: 1px solid rgba(0,212,255,0.06);
+            position: relative;
+            z-index: 1;
+        }
+
+        .process-inner { max-width: 960px; margin: 0 auto; }
+        .process .section-header { text-align: center; }
+        .process .section-line { margin: 1rem auto 0; }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            margin-top: 4.5rem;
+            position: relative;
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 27px; left: 16%; right: 16%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0,212,255,0.2) 20%, rgba(0,212,255,0.2) 80%, transparent);
+        }
+
+        @media (max-width: 720px) {
+            .steps { grid-template-columns: 1fr 1fr; gap: 2.5rem 0; }
+            .steps::before { display: none; }
+        }
+        @media (max-width: 440px) { .steps { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+        .step {
+            text-align: center;
+            padding: 0 0.75rem;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity 0.55s ease, transform 0.55s ease;
+        }
+
+        .step.visible { opacity: 1; transform: translateY(0); }
+        .step:nth-child(1) { transition-delay: 0.0s; }
+        .step:nth-child(2) { transition-delay: 0.15s; }
+        .step:nth-child(3) { transition-delay: 0.30s; }
+        .step:nth-child(4) { transition-delay: 0.45s; }
+
+        .step-circle {
+            width: 56px; height: 56px;
+            border: 1px solid rgba(0,212,255,0.22);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.4rem;
+            font-size: 1.4rem;
+            background: rgba(0,0,0,0.85);
+            position: relative;
+            transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+        }
+
+        .step:hover .step-circle {
+            border-color: var(--neon);
+            box-shadow: 0 0 20px rgba(0,212,255,0.2);
+            background: rgba(0,212,255,0.04);
+        }
+
+        .step-badge {
+            position: absolute;
+            top: -5px; right: -5px;
+            width: 20px; height: 20px;
+            background: var(--dark);
+            border: 1px solid var(--neon);
+            border-radius: 50%;
+            font-size: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--neon);
+        }
+
+        .step-title {
+            font-size: 0.7rem;
+            color: var(--neon);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 0.55rem;
+        }
+
+        .step-desc { font-size: 0.7rem; color: var(--gray); line-height: 1.82; }
+
         /* ── Footer ── */
         footer {
             padding: 2.2rem;
@@ -650,12 +1129,16 @@
 </head>
 <body>
     <canvas id="matrix-canvas"></canvas>
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
 
     <!-- Nav -->
     <nav>
         <div class="nav-logo">AUT</div>
         <ul class="nav-links">
             <li><a href="#servicios">SERVICIOS</a></li>
+            <li><a href="#beneficios">BENEFICIOS</a></li>
+            <li><a href="#proceso">PROCESO</a></li>
             <li><a href="#contacto">CONTACTO</a></li>
         </ul>
     </nav>
@@ -694,11 +1177,35 @@
                 </div>
             </div>
 
+            <a href="#contacto" class="hero-cta">[ INICIAR PROYECTO ]</a>
+
             <div class="scroll-indicator">
                 <div class="scroll-line"></div>
             </div>
         </div>
     </section>
+
+    <!-- Marquee Strip -->
+    <div class="marquee-strip" aria-hidden="true">
+        <div class="marquee-track">
+            <span class="marquee-item">AUTOMATIZACIÓN</span><span class="marquee-sep"> ◆ </span>
+            <span class="marquee-item">SCRAPING &amp; BOTS</span><span class="marquee-sep"> ◆ </span>
+            <span class="marquee-item">PÁGINAS WEB</span><span class="marquee-sep"> ◆ </span>
+            <span class="marquee-item">APPS MÓVILES</span><span class="marquee-sep"> ◆ </span>
+            <span class="marquee-item">ANÁLISIS DE DATOS</span><span class="marquee-sep"> ◆ </span>
+            <span class="marquee-item">TELEGRAM BOTS</span><span class="marquee-sep"> ◆ </span>
+            <span class="marquee-item">BRANDING</span><span class="marquee-sep"> ◆ </span>
+            <span class="marquee-item">GESTIÓN DOCUMENTAL</span><span class="marquee-sep"> ◆ </span>
+            <span class="marquee-item">AUTOMATIZACIÓN</span><span class="marquee-sep"> ◆ </span>
+            <span class="marquee-item">SCRAPING &amp; BOTS</span><span class="marquee-sep"> ◆ </span>
+            <span class="marquee-item">PÁGINAS WEB</span><span class="marquee-sep"> ◆ </span>
+            <span class="marquee-item">APPS MÓVILES</span><span class="marquee-sep"> ◆ </span>
+            <span class="marquee-item">ANÁLISIS DE DATOS</span><span class="marquee-sep"> ◆ </span>
+            <span class="marquee-item">TELEGRAM BOTS</span><span class="marquee-sep"> ◆ </span>
+            <span class="marquee-item">BRANDING</span><span class="marquee-sep"> ◆ </span>
+            <span class="marquee-item">GESTIÓN DOCUMENTAL</span><span class="marquee-sep"> ◆ </span>
+        </div>
+    </div>
 
     <!-- Services -->
     <section class="services" id="servicios">
@@ -761,6 +1268,98 @@
         </div>
     </section>
 
+    <!-- Benefits -->
+    <section class="benefits" id="beneficios">
+        <div class="section-header">
+            <div class="section-label">// VENTAJAS COMPETITIVAS</div>
+            <h2 class="section-title">¿POR QUÉ ELEGIR <span>AUT</span>?</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-top">
+                    <span class="benefit-icon">⏱</span>
+                    <span class="benefit-pct-display" data-target="80" data-suffix="%">0%</span>
+                </div>
+                <div class="benefit-title">Reducción de tiempo</div>
+                <p class="benefit-desc">Eliminamos las tareas repetitivas de tu equipo. Lo que tomaba horas, lo hacemos en minutos con bots que trabajan 24/7 sin descansos.</p>
+                <div class="benefit-bar-wrap"><div class="benefit-bar" data-width="80"></div></div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-top">
+                    <span class="benefit-icon">💰</span>
+                    <span class="benefit-pct-display" data-target="60" data-suffix="%">0%</span>
+                </div>
+                <div class="benefit-title">Reducción de costos</div>
+                <p class="benefit-desc">Menos errores, menos personal en tareas operativas. Tu inversión en automatización se recupera en los primeros meses de operación.</p>
+                <div class="benefit-bar-wrap"><div class="benefit-bar" data-width="60"></div></div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-top">
+                    <span class="benefit-icon">🔒</span>
+                    <span class="benefit-pct-display" data-target="99" data-suffix="%">0%</span>
+                </div>
+                <div class="benefit-title">Precisión garantizada</div>
+                <p class="benefit-desc">Los bots no se cansan ni cometen errores humanos. Cada proceso se ejecuta de forma idéntica, siempre, con trazabilidad completa.</p>
+                <div class="benefit-bar-wrap"><div class="benefit-bar" data-width="99"></div></div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-top">
+                    <span class="benefit-icon">🚀</span>
+                    <span class="benefit-pct-display">∞</span>
+                </div>
+                <div class="benefit-title">Escala sin límites</div>
+                <p class="benefit-desc">Un sistema automatizado puede hacer el trabajo de miles de personas en paralelo. Escala tu operación sin contratar más personal.</p>
+                <div class="benefit-bar-wrap"><div class="benefit-bar" data-width="100"></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process -->
+    <section class="process" id="proceso">
+        <div class="process-inner">
+            <div class="section-header">
+                <div class="section-label">// METODOLOGÍA AUT</div>
+                <h2 class="section-title">CÓMO <span>TRABAJAMOS</span></h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-circle">
+                        <span>🔍</span>
+                        <span class="step-badge">01</span>
+                    </div>
+                    <div class="step-title">ANÁLISIS</div>
+                    <p class="step-desc">Estudiamos tu proceso actual, identificamos cuellos de botella y definimos exactamente qué automatizar y cómo.</p>
+                </div>
+                <div class="step">
+                    <div class="step-circle">
+                        <span>🎯</span>
+                        <span class="step-badge">02</span>
+                    </div>
+                    <div class="step-title">DISEÑO</div>
+                    <p class="step-desc">Creamos la arquitectura de la solución: flujos, integraciones, tecnologías y cronograma de entrega personalizado.</p>
+                </div>
+                <div class="step">
+                    <div class="step-circle">
+                        <span>⚙️</span>
+                        <span class="step-badge">03</span>
+                    </div>
+                    <div class="step-title">DESARROLLO</div>
+                    <p class="step-desc">Construimos e integramos cada componente con entregas parciales para que revises el avance en tiempo real.</p>
+                </div>
+                <div class="step">
+                    <div class="step-circle">
+                        <span>🚀</span>
+                        <span class="step-badge">04</span>
+                    </div>
+                    <div class="step-title">ENTREGA</div>
+                    <p class="step-desc">Deploy en producción, capacitación de tu equipo y soporte post-lanzamiento para garantizar el funcionamiento continuo.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Contact -->
     <section class="contact" id="contacto">
         <div class="contact-inner">
@@ -816,6 +1415,30 @@
     <footer>
         <p>AUT SYSTEM © 2026 — <span>POWERED BY AUTOMATION</span></p>
     </footer>
+
+    <!-- Service Detail Modal -->
+    <div id="serviceModal" class="service-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-box">
+            <button class="modal-close" id="modalClose">✕ CERRAR</button>
+            <span class="modal-icon" id="modalIcon"></span>
+            <div class="modal-num" id="modalNum"></div>
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <div class="modal-section">
+                <div class="modal-section-label">// ¿QUÉ ES ESTE SERVICIO?</div>
+                <p class="modal-desc" id="modalDesc"></p>
+            </div>
+            <div class="modal-section">
+                <div class="modal-section-label">// ¿QUÉ PODEMOS AUTOMATIZAR?</div>
+                <ul class="modal-automate-list" id="modalAutomate"></ul>
+            </div>
+            <div class="modal-section">
+                <div class="modal-section-label">// CASOS DE USO REALES</div>
+                <div class="modal-examples" id="modalExamples"></div>
+            </div>
+            <a href="#contacto" class="modal-cta" id="modalCta">[ SOLICITAR ESTE SERVICIO ]</a>
+        </div>
+    </div>
 
     <script>
         // ── Matrix Rain ──────────────────────────────────────────────
@@ -1018,6 +1641,237 @@
         });
 
         renderCountries();
+
+        // ── Service Modal ────────────────────────────────────────
+        const SERVICES_DATA = [
+            {
+                num: '// 01', icon: '🕸️', title: 'Scraping & Web Bots',
+                tag: 'PYTHON · SELENIUM · PANDAS',
+                desc: 'Automatizamos la navegación web para extraer, procesar y estructurar datos de cualquier sitio en internet. Nuestros bots trabajan 24/7 sin intervención humana, recopilando información en tiempo real y exportándola en formatos listos para usar: Excel, JSON, bases de datos o directamente a tu panel de control.',
+                automate: [
+                    'Monitoreo de precios de competidores en tiempo real con alertas automáticas',
+                    'Extracción masiva de catálogos de productos, stock e información de proveedores',
+                    'Generación automática de leads desde directorios, LinkedIn o portales web',
+                    'Vigilancia de menciones de marca y reputación en múltiples plataformas',
+                    'Llenado automático de formularios y procesos web repetitivos',
+                    'Descarga programada de datos para alimentar reportes o dashboards diarios',
+                ],
+                examples: ['Bot de precios e-commerce', 'Scraper de inmuebles', 'Extractor de contactos', 'Monitor de redes sociales', 'Automatización de registros', 'Dashboard de competencia']
+            },
+            {
+                num: '// 02', icon: '📊', title: 'Análisis Estadístico',
+                tag: 'NUMPY · MATPLOTLIB · ML',
+                desc: 'Transformamos tus datos crudos en inteligencia accionable. Procesamos grandes volúmenes de datos de mercado, calculamos tendencias, detectamos anomalías y construimos modelos predictivos que mejoran la toma de decisiones. Todo automatizado, sin necesidad de hacerlo manualmente cada vez.',
+                automate: [
+                    'Reportes estadísticos generados automáticamente cada día o semana',
+                    'Detección de anomalías en ventas, costos o comportamiento de usuarios con alertas',
+                    'Modelos de predicción de demanda, ventas futuras o riesgo de abandono',
+                    'Segmentación automática de clientes por patrones de comportamiento o compra',
+                    'Análisis de correlación entre variables clave del negocio',
+                    'Dashboards interactivos que se actualizan solos con cada nuevo dato',
+                ],
+                examples: ['Reporte de ventas automático', 'Predicción de inventario', 'Segmentación de clientes', 'Análisis de rentabilidad', 'Modelo de churn', 'Forecast de mercado']
+            },
+            {
+                num: '// 03', icon: '✈️', title: 'Telegram Integration',
+                tag: 'TELEGRAM API · WEBHOOKS',
+                desc: 'Conectamos tus sistemas al canal de comunicación más rápido: Telegram. Creamos bots inteligentes que notifican, responden, ejecutan comandos y controlan procesos directamente desde tu teléfono, sin importar donde estés ni a qué hora sea.',
+                automate: [
+                    'Notificaciones instantáneas cuando ocurre un evento crítico: venta, error o alerta',
+                    'Bots de atención al cliente con respuestas automáticas según palabras clave',
+                    'Control remoto de procesos y servidores enviando comandos por mensaje',
+                    'Alertas de métricas clave: ventas del día, stock bajo, fallo en sistema',
+                    'Consultas a bases de datos en tiempo real desde cualquier chat de Telegram',
+                    'Flujos de aprobación y notificación interna para equipos de trabajo',
+                ],
+                examples: ['Bot de alertas de ventas', 'Notificador de leads', 'Control remoto de servidor', 'Bot de soporte 24/7', 'Monitor de inventario', 'Pipeline de aprobaciones']
+            },
+            {
+                num: '// 04', icon: '📄', title: 'Gestión Documental',
+                tag: 'PYPDF2 · OCR · AUTOMATION',
+                desc: 'Automatizamos el ciclo de vida completo de tus documentos. Desde la captura por OCR hasta el archivo organizado, eliminamos el trabajo manual de procesar, clasificar y extraer información de cientos o miles de archivos. Lo que toma horas lo hacemos en segundos.',
+                automate: [
+                    'Extracción automática de datos de facturas, contratos y recibos con OCR',
+                    'Unión y división masiva de archivos PDF en segundos con criterios personalizados',
+                    'Digitalización y reconocimiento de texto en documentos escaneados',
+                    'Clasificación y renombrado automático de archivos por fecha, proveedor o código',
+                    'Generación de documentos PDF personalizados en lote (certificados, informes, cartas)',
+                    'Validación automática de datos en formularios y detección de errores',
+                ],
+                examples: ['Procesador de facturas', 'Organizador de contratos', 'Generador de certificados', 'Extractor de NIT/RUT', 'Conversor PDF a Excel', 'Archivador automático']
+            },
+            {
+                num: '// 05', icon: '🌐', title: 'Páginas Web',
+                tag: 'HTML · CSS · JS · SEO',
+                desc: 'Diseñamos y desarrollamos sitios web profesionales que reflejan tu identidad de marca. Optimizados para SEO, velocidad de carga y conversión de visitantes en clientes. Completamente responsivos para verse perfectos en móvil, tablet y escritorio.',
+                automate: [
+                    'Formularios de contacto con notificación automática por Telegram o email',
+                    'Captura de leads integrada directamente con tu canal de comunicación',
+                    'Actualización automática de contenido dinámico desde bases de datos',
+                    'SEO on-page optimizado para posicionamiento en Google desde el día uno',
+                    'Despliegue continuo: al hacer cambios en el código se actualiza solo',
+                    'Monitoreo de disponibilidad con alertas ante caídas del sitio',
+                ],
+                examples: ['Landing page corporativa', 'Portafolio profesional', 'Sitio de servicios', 'Catálogo de productos', 'Página de evento', 'Blog con CMS']
+            },
+            {
+                num: '// 06', icon: '⚡', title: 'Aplicaciones Web',
+                tag: 'REACT · FLASK · NODE · API',
+                desc: 'Construimos plataformas web a medida con toda la lógica de negocio que necesitas. Dashboards de control, sistemas de gestión, APIs robustas y portales completos para digitalizar y escalar tu operación, con autenticación segura y acceso desde cualquier dispositivo.',
+                automate: [
+                    'Paneles de administración con métricas y reportes actualizados en tiempo real',
+                    'Gestión de usuarios, roles y permisos de forma automatizada y segura',
+                    'Integración con APIs externas: pasarelas de pago, logística, CRMs, ERPs',
+                    'Flujos de trabajo y aprobaciones entre usuarios sin intervención manual',
+                    'Notificaciones automáticas por email, SMS o Telegram según eventos del sistema',
+                    'Exportación automática de reportes a Excel o PDF con un solo clic',
+                ],
+                examples: ['CRM personalizado', 'Dashboard de métricas', 'Sistema de inventario', 'Plataforma de reservas', 'Panel de facturación', 'Portal de clientes']
+            },
+            {
+                num: '// 07', icon: '🎨', title: 'Apps & Branding',
+                tag: 'FLUTTER · FIGMA · BRANDING',
+                desc: 'Desarrollamos aplicaciones móviles nativas y multiplataforma con identidad visual única. También construimos tu marca desde cero: logo, paleta de colores, tipografía y guía de estilo completa para que tu negocio se vea profesional en todos los canales.',
+                automate: [
+                    'Notificaciones push automáticas activadas por eventos, horarios o campañas',
+                    'Sincronización automática con backend y bases de datos en la nube',
+                    'Actualizaciones de contenido y precios sin necesidad de publicar nueva versión',
+                    'Analytics de uso y comportamiento del usuario procesados en tiempo real',
+                    'Integración con pasarelas de pago, mapas y servicios externos',
+                    'Sistema de fidelización con puntos, recompensas o descuentos automatizados',
+                ],
+                examples: ['App de delivery', 'App de reservas', 'Plataforma de cursos', 'Identidad corporativa', 'Logo + manual de marca', 'App con panel admin']
+            },
+        ];
+
+        const svcModal = document.getElementById('serviceModal');
+
+        function openServiceModal(idx) {
+            const s = SERVICES_DATA[idx];
+            document.getElementById('modalIcon').textContent = s.icon;
+            document.getElementById('modalNum').textContent = s.num;
+            document.getElementById('modalTitle').textContent = s.title;
+            document.getElementById('modalDesc').textContent = s.desc;
+            document.getElementById('modalAutomate').innerHTML = s.automate.map(a => `<li>${a}</li>`).join('');
+            document.getElementById('modalExamples').innerHTML = s.examples.map(e => `<div class="modal-example-tag">${e}</div>`).join('');
+            svcModal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeServiceModal() {
+            svcModal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('modalClose').addEventListener('click', closeServiceModal);
+        svcModal.querySelector('.modal-overlay').addEventListener('click', closeServiceModal);
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeServiceModal(); });
+        document.getElementById('modalCta').addEventListener('click', closeServiceModal);
+
+        document.querySelectorAll('.card').forEach((card, idx) => {
+            card.insertAdjacentHTML('beforeend', '<span class="card-expand">[ VER DETALLE ]</span>');
+            card.addEventListener('click', () => openServiceModal(idx));
+        });
+
+        // ── Custom cursor ────────────────────────────────────────────
+        (function() {
+            const dot  = document.getElementById('cursorDot');
+            const ring = document.getElementById('cursorRing');
+            if (!dot || 'ontouchstart' in window) {
+                if (dot) { dot.style.display = 'none'; ring.style.display = 'none'; }
+                return;
+            }
+            document.body.style.cursor = 'none';
+            let mx = -100, my = -100, rx = -100, ry = -100;
+
+            document.addEventListener('mousemove', e => {
+                mx = e.clientX; my = e.clientY;
+                dot.style.left = mx + 'px';
+                dot.style.top  = my + 'px';
+            });
+
+            document.addEventListener('mousedown', () => {
+                dot.style.transform  = 'translate(-50%,-50%) scale(1.8)';
+                ring.style.transform = 'translate(-50%,-50%) scale(0.6)';
+            });
+            document.addEventListener('mouseup', () => {
+                dot.style.transform  = 'translate(-50%,-50%) scale(1)';
+                ring.style.transform = 'translate(-50%,-50%) scale(1)';
+            });
+
+            document.querySelectorAll('a, button, .card').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    dot.style.width  = '12px';
+                    dot.style.height = '12px';
+                    ring.style.borderColor = 'rgba(0,212,255,0.75)';
+                    ring.style.transform   = 'translate(-50%,-50%) scale(1.5)';
+                });
+                el.addEventListener('mouseleave', () => {
+                    dot.style.width  = '6px';
+                    dot.style.height = '6px';
+                    ring.style.borderColor = 'rgba(0,212,255,0.45)';
+                    ring.style.transform   = 'translate(-50%,-50%) scale(1)';
+                });
+            });
+
+            (function animateRing() {
+                rx += (mx - rx) * 0.16;
+                ry += (my - ry) * 0.16;
+                ring.style.left = rx + 'px';
+                ring.style.top  = ry + 'px';
+                requestAnimationFrame(animateRing);
+            })();
+        })();
+
+        // ── 3D card tilt ─────────────────────────────────────────────
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const r = card.getBoundingClientRect();
+                const x = (e.clientX - r.left - r.width  / 2) / r.width;
+                const y = (e.clientY - r.top  - r.height / 2) / r.height;
+                card.style.transition = 'border-color 0.3s, box-shadow 0.3s';
+                card.style.transform  = `translateY(-6px) perspective(700px) rotateX(${-y * 7}deg) rotateY(${x * 7}deg)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transition = '';
+                card.style.transform  = '';
+            });
+        });
+
+        // ── Nav active section highlight ─────────────────────────────
+        const navAs = document.querySelectorAll('.nav-links a[href^="#"]');
+        const secObs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    const id = '#' + e.target.id;
+                    navAs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
+                }
+            });
+        }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+        document.querySelectorAll('section[id]').forEach(s => secObs.observe(s));
+
+        // ── Benefit card animations ───────────────────────────────────
+        const benefitObs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (!e.isIntersecting) return;
+                e.target.classList.add('visible');
+                const bar   = e.target.querySelector('.benefit-bar');
+                const numEl = e.target.querySelector('.benefit-pct-display[data-target]');
+                if (bar)   setTimeout(() => { bar.style.width = bar.dataset.width + '%'; }, 120);
+                if (numEl) setTimeout(() => animateCounter(numEl), 120);
+                benefitObs.unobserve(e.target);
+            });
+        }, { threshold: 0.2 });
+        document.querySelectorAll('.benefit-card').forEach(el => benefitObs.observe(el));
+
+        // ── Step animations ───────────────────────────────────────────
+        const stepObs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) { e.target.classList.add('visible'); stepObs.unobserve(e.target); }
+            });
+        }, { threshold: 0.25 });
+        document.querySelectorAll('.step').forEach(el => stepObs.observe(el));
+
     </script>
 </body>
 </html>
