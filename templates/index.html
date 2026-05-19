@@ -8,9 +8,9 @@
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap');
 
         :root {
-            --neon: #00ff41;
-            --neon-dim: rgba(0,255,65,0.12);
-            --neon-glow: rgba(0,255,65,0.4);
+            --neon: #00d4ff;
+            --neon-dim: rgba(0,212,255,0.12);
+            --neon-glow: rgba(0,212,255,0.4);
             --dark: #050505;
             --gray: #777;
             --white: #ddd;
@@ -53,7 +53,7 @@
             padding: 1.1rem 2.5rem;
             background: rgba(5,5,5,0.85);
             backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0,255,65,0.12);
+            border-bottom: 1px solid rgba(0,212,255,0.12);
         }
 
         .nav-logo {
@@ -96,7 +96,7 @@
             align-items: center;
             gap: 0.5rem;
             background: rgba(0,0,0,0.7);
-            border: 1px solid rgba(0,255,65,0.18);
+            border: 1px solid rgba(0,212,255,0.18);
             padding: 0.55rem 1.3rem;
             border-radius: 3px;
             margin-bottom: 2.8rem;
@@ -111,8 +111,8 @@
         .dot.g { background: var(--neon); animation: pulse-dot 2s infinite; }
 
         @keyframes pulse-dot {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(0,255,65,0.5); }
-            50% { box-shadow: 0 0 0 4px rgba(0,255,65,0); }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0,212,255,0.5); }
+            50% { box-shadow: 0 0 0 5px rgba(0,212,255,0); }
         }
 
         .terminal-cmd { color: var(--neon); }
@@ -214,7 +214,7 @@
         .stat-divider {
             width: 1px;
             height: 50px;
-            background: rgba(0,255,65,0.15);
+            background: rgba(0,212,255,0.15);
             align-self: center;
         }
 
@@ -256,7 +256,7 @@
         /* ── Services section ── */
         .services {
             padding: 7rem 2rem;
-            max-width: 1150px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
@@ -292,7 +292,7 @@
         .section-line {
             width: 50px;
             height: 2px;
-            background: rgba(0,255,65,0.25);
+            background: rgba(0,212,255,0.25);
             margin-top: 1rem;
             position: relative;
             overflow: hidden;
@@ -313,13 +313,13 @@
         /* ── Cards ── */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
             gap: 1.2rem;
         }
 
         .card {
             background: rgba(0,0,0,0.55);
-            border: 1px solid rgba(0,255,65,0.18);
+            border: 1px solid rgba(0,212,255,0.18);
             padding: 2rem 1.8rem;
             position: relative;
             overflow: hidden;
@@ -338,6 +338,9 @@
         .card:nth-child(2) { transition-delay: 0.1s; }
         .card:nth-child(3) { transition-delay: 0.2s; }
         .card:nth-child(4) { transition-delay: 0.3s; }
+        .card:nth-child(5) { transition-delay: 0.4s; }
+        .card:nth-child(6) { transition-delay: 0.5s; }
+        .card:nth-child(7) { transition-delay: 0.6s; }
 
         /* Scan-line sweep on hover */
         .card::before {
@@ -366,14 +369,14 @@
         .card:hover::after { opacity: 1; }
 
         .card:hover {
-            border-color: rgba(0,255,65,0.55);
-            box-shadow: 0 0 35px rgba(0,255,65,0.08), inset 0 0 30px rgba(0,255,65,0.02);
+            border-color: rgba(0,212,255,0.55);
+            box-shadow: 0 0 35px rgba(0,212,255,0.08), inset 0 0 30px rgba(0,212,255,0.02);
             transform: translateY(-6px) !important;
         }
 
         .card-num {
             font-size: 0.62rem;
-            color: rgba(0,255,65,0.5);
+            color: rgba(0,212,255,0.5);
             letter-spacing: 3px;
             margin-bottom: 1rem;
         }
@@ -382,7 +385,7 @@
             font-size: 1.7rem;
             margin-bottom: 0.9rem;
             display: block;
-            filter: drop-shadow(0 0 6px rgba(0,255,65,0.4));
+            filter: drop-shadow(0 0 6px rgba(0,212,255,0.4));
         }
 
         .card h3 {
@@ -403,8 +406,8 @@
             display: inline-block;
             margin-top: 1.3rem;
             font-size: 0.6rem;
-            color: rgba(0,255,65,0.6);
-            border: 1px solid rgba(0,255,65,0.2);
+            color: rgba(0,212,255,0.6);
+            border: 1px solid rgba(0,212,255,0.2);
             padding: 0.2rem 0.7rem;
             letter-spacing: 1px;
         }
@@ -412,9 +415,9 @@
         /* ── Contact section ── */
         .contact {
             padding: 7rem 2rem;
-            background: rgba(0,255,65,0.015);
-            border-top: 1px solid rgba(0,255,65,0.08);
-            border-bottom: 1px solid rgba(0,255,65,0.08);
+            background: rgba(0,212,255,0.015);
+            border-top: 1px solid rgba(0,212,255,0.08);
+            border-bottom: 1px solid rgba(0,212,255,0.08);
         }
 
         .contact-inner {
@@ -428,7 +431,7 @@
         .form-wrapper {
             margin-top: 3rem;
             background: rgba(0,0,0,0.6);
-            border: 1px solid rgba(0,255,65,0.18);
+            border: 1px solid rgba(0,212,255,0.18);
             padding: 2.8rem;
             opacity: 0;
             transform: translateY(30px);
@@ -440,8 +443,17 @@
             transform: translateY(0);
         }
 
+        /* Two-column form layout */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 1.2rem;
+        }
+
+        @media (max-width: 520px) { .form-row { grid-template-columns: 1fr; } }
+
         .form-group {
-            margin-bottom: 1.6rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-group label {
@@ -456,7 +468,7 @@
         .form-group input {
             width: 100%;
             background: rgba(0,0,0,0.5);
-            border: 1px solid rgba(0,255,65,0.18);
+            border: 1px solid rgba(0,212,255,0.18);
             color: var(--white);
             padding: 0.85rem 1.1rem;
             font-family: inherit;
@@ -467,7 +479,7 @@
 
         .form-group input:focus {
             border-color: var(--neon);
-            box-shadow: 0 0 12px rgba(0,255,65,0.08);
+            box-shadow: 0 0 12px rgba(0,212,255,0.1);
         }
 
         .form-group input::placeholder { color: #333; }
@@ -512,7 +524,7 @@
             z-index: 1;
         }
 
-        footer span { color: rgba(0,255,65,0.35); }
+        footer span { color: rgba(0,212,255,0.35); }
     </style>
 </head>
 <body>
@@ -546,8 +558,8 @@
 
             <div class="hero-stats">
                 <div class="stat">
-                    <div class="stat-num" data-target="4" data-suffix="+">0</div>
-                    <div class="stat-label">MÓDULOS</div>
+                    <div class="stat-num" data-target="7" data-suffix="+">0</div>
+                    <div class="stat-label">SERVICIOS</div>
                 </div>
                 <div class="stat-divider"></div>
                 <div class="stat">
@@ -571,7 +583,7 @@
     <section class="services" id="servicios">
         <div class="section-header">
             <div class="section-label">// MÓDULOS DISPONIBLES</div>
-            <h2 class="section-title">SERVICIOS DE <span>AUTOMATIZACIÓN</span></h2>
+            <h2 class="section-title">NUESTROS <span>SERVICIOS</span></h2>
             <div class="section-line"></div>
         </div>
 
@@ -604,6 +616,27 @@
                 <p>Unión, escaneo y procesamiento masivo de archivos PDF mediante herramientas de automatización.</p>
                 <span class="card-tag">PYPDF2 · OCR · AUTOMATION</span>
             </div>
+            <div class="card">
+                <div class="card-num">// 05</div>
+                <span class="card-icon">🌐</span>
+                <h3>Páginas Web</h3>
+                <p>Diseño y desarrollo de sitios web profesionales, modernos y responsivos con identidad visual personalizada y optimización SEO.</p>
+                <span class="card-tag">HTML · CSS · JS · SEO</span>
+            </div>
+            <div class="card">
+                <div class="card-num">// 06</div>
+                <span class="card-icon">⚡</span>
+                <h3>Aplicaciones Web</h3>
+                <p>Desarrollo de plataformas y dashboards a medida con autenticación, paneles de control y lógica de negocio personalizada.</p>
+                <span class="card-tag">REACT · FLASK · NODE · API</span>
+            </div>
+            <div class="card">
+                <div class="card-num">// 07</div>
+                <span class="card-icon">🎨</span>
+                <h3>Apps & Branding</h3>
+                <p>Desarrollo de aplicaciones móviles con personalización completa: diseño de logos, paleta de colores e identidad de marca.</p>
+                <span class="card-tag">FLUTTER · FIGMA · BRANDING</span>
+            </div>
         </div>
     </section>
 
@@ -611,22 +644,34 @@
     <section class="contact" id="contacto">
         <div class="contact-inner">
             <div class="section-header">
-                <div class="section-label">// ACCEDER AL SISTEMA</div>
-                <h2 class="section-title">SOLICITAR <span>SOLUCIÓN</span></h2>
+                <div class="section-label">// SOLICITAR ASESORÍA</div>
+                <h2 class="section-title">CONTACTA A UN <span>EXPERTO</span></h2>
                 <div class="section-line"></div>
             </div>
 
             <div class="form-wrapper">
                 <form action="/registro" method="POST">
-                    <div class="form-group">
-                        <label for="nombre">IDENTIFICACIÓN</label>
-                        <input type="text" id="nombre" name="nombre" placeholder="Tu nombre completo" required autocomplete="off">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombre">NOMBRE COMPLETO</label>
+                            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">CORREO ELECTRÓNICO</label>
+                            <input type="email" id="email" name="email" placeholder="tu@email.com" required autocomplete="off">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="email">CANAL DE CONTACTO</label>
-                        <input type="email" id="email" name="email" placeholder="tu@email.com" required autocomplete="off">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="empresa">EMPRESA</label>
+                            <input type="text" id="empresa" name="empresa" placeholder="Nombre de tu empresa" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label for="telefono">NÚMERO DE CONTACTO</label>
+                            <input type="tel" id="telefono" name="telefono" placeholder="+XX XXX XXX XXXX" required autocomplete="off">
+                        </div>
                     </div>
-                    <button type="submit" class="btn-submit">[ ENVIAR SOLICITUD ]</button>
+                    <button type="submit" class="btn-submit">[ SOLICITAR ASESORÍA GRATUITA ]</button>
                 </form>
             </div>
         </div>
@@ -662,7 +707,7 @@
         function drawMatrix() {
             ctx.fillStyle = 'rgba(5,5,5,0.05)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#00ff41';
+            ctx.fillStyle = '#00d4ff';
             ctx.font = `${FS}px 'JetBrains Mono', monospace`;
             drops.forEach((y, i) => {
                 ctx.fillText(CHARS[Math.floor(Math.random() * CHARS.length)], i * FS, y * FS);
@@ -677,6 +722,7 @@
             'INICIANDO MÓDULOS DE AUTOMATIZACIÓN...',
             'OPTIMIZA. AUTOMATIZA. ESCALA.',
             'BOTS, DATOS Y RESULTADOS EN TIEMPO REAL.',
+            'PÁGINAS WEB · APPS · BRANDING A MEDIDA.',
             'TU NEGOCIO EN PILOTO AUTOMÁTICO.'
         ];
         let pi = 0, ci = 0, deleting = false;
