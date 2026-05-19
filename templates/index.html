@@ -1113,6 +1113,206 @@
 
         .step-desc { font-size: 0.7rem; color: var(--gray); line-height: 1.82; }
 
+        /* ── Hero positioning ── */
+        .hero { position: relative; overflow: hidden; }
+
+        /* ── Hero grid overlay ── */
+        .hero-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Jarvis HUD rotating rings ── */
+        .hud-rings {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 0;
+            width: 0; height: 0;
+        }
+        .hud-ring {
+            position: absolute;
+            border-radius: 50%;
+            top: 0; left: 0;
+            transform: translate(-50%, -50%);
+        }
+        .hud-ring:nth-child(1) {
+            width: 360px; height: 360px;
+            border: 1px solid rgba(0,212,255,0.06);
+            border-top: 1px solid rgba(0,212,255,0.38);
+            animation: hudSpin 14s linear infinite;
+        }
+        .hud-ring:nth-child(1)::after {
+            content: '';
+            position: absolute;
+            top: -4px; left: 50%;
+            transform: translateX(-50%);
+            width: 7px; height: 7px;
+            background: var(--neon);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--neon), 0 0 24px rgba(0,212,255,0.5);
+        }
+        .hud-ring:nth-child(2) {
+            width: 560px; height: 560px;
+            border: 1px solid rgba(0,212,255,0.04);
+            border-bottom: 1px solid rgba(0,212,255,0.18);
+            animation: hudSpin 26s linear infinite reverse;
+        }
+        .hud-ring:nth-child(2)::after {
+            content: '';
+            position: absolute;
+            bottom: -3px; left: 50%;
+            transform: translateX(-50%);
+            width: 5px; height: 5px;
+            background: rgba(0,212,255,0.7);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--neon);
+        }
+        .hud-ring:nth-child(3) {
+            width: 760px; height: 760px;
+            border: 1px solid rgba(0,212,255,0.03);
+            border-right: 1px solid rgba(0,212,255,0.12);
+            animation: hudSpin 42s linear infinite;
+        }
+        @keyframes hudSpin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to   { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* ── Page scan line ── */
+        .page-scan {
+            position: fixed;
+            left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 5%, rgba(0,212,255,0.6) 50%, transparent 95%);
+            z-index: 500;
+            pointer-events: none;
+            animation: pageScan 15s ease-in-out infinite;
+            top: -1px;
+        }
+        @keyframes pageScan {
+            0%   { top: -1px; opacity: 0; }
+            2%   { opacity: 0.8; }
+            93%  { opacity: 0.15; }
+            100% { top: 100vh; opacity: 0; }
+        }
+
+        /* ── Hero HUD data display ── */
+        .hero-hud-data {
+            position: absolute;
+            top: 7.5rem; right: 2.2rem;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            pointer-events: none;
+        }
+        @media (max-width: 640px) { .hero-hud-data { display: none; } }
+        .hud-data-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.52rem;
+            letter-spacing: 2px;
+        }
+        .hud-dl { color: rgba(0,212,255,0.3); min-width: 2.4rem; }
+        .hud-dv { color: var(--neon); text-shadow: 0 0 6px var(--neon); }
+        .hud-blink { animation: blink 1.2s step-end infinite; }
+
+        /* ── Stat pulsing rings ── */
+        .stat { position: relative; }
+        .stat::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px; height: 70px;
+            border: 1px solid rgba(0,212,255,0.08);
+            border-radius: 50%;
+            animation: statPing 3s ease-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .stat::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px; height: 70px;
+            border: 1px solid rgba(0,212,255,0.05);
+            border-radius: 50%;
+            animation: statPing 3s 1.5s ease-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes statPing {
+            0%   { width: 65px; height: 65px; opacity: 0.7; }
+            100% { width: 125px; height: 125px; opacity: 0; }
+        }
+
+        /* ── Modal impact section ── */
+        .modal-impact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+        }
+        @media (max-width: 480px) { .modal-impact-grid { grid-template-columns: 1fr; } }
+        .modal-impact-item {
+            background: rgba(0,212,255,0.02);
+            border: 1px solid rgba(0,212,255,0.1);
+            border-left: 2px solid var(--neon);
+            padding: 0.65rem 0.9rem;
+            font-size: 0.71rem;
+            color: var(--gray);
+            line-height: 1.65;
+        }
+        .modal-impact-item strong {
+            display: block;
+            color: var(--neon);
+            font-size: 0.58rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 0.2rem;
+        }
+
+        /* ── Modal acquire section ── */
+        .modal-acquire-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+        .acquire-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.9rem;
+            padding: 0.75rem 1rem;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(0,212,255,0.08);
+            transition: border-color 0.3s, background 0.3s;
+        }
+        .acquire-step:hover {
+            border-color: rgba(0,212,255,0.25);
+            background: rgba(0,212,255,0.02);
+        }
+        .acquire-icon { font-size: 1.2rem; flex-shrink: 0; padding-top: 0.1rem; }
+        .acquire-text { flex: 1; }
+        .acquire-text strong {
+            display: block;
+            font-size: 0.6rem;
+            color: var(--neon);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 0.2rem;
+        }
+        .acquire-text p { font-size: 0.71rem; color: var(--gray); line-height: 1.65; }
+
         /* ── Footer ── */
         footer {
             padding: 2.2rem;
@@ -1131,6 +1331,7 @@
     <canvas id="matrix-canvas"></canvas>
     <div class="cursor-dot" id="cursorDot"></div>
     <div class="cursor-ring" id="cursorRing"></div>
+    <div class="page-scan"></div>
 
     <!-- Nav -->
     <nav>
@@ -1145,6 +1346,17 @@
 
     <!-- Hero -->
     <section class="hero">
+        <div class="hero-grid"></div>
+        <div class="hud-rings">
+            <div class="hud-ring"></div>
+            <div class="hud-ring"></div>
+            <div class="hud-ring"></div>
+        </div>
+        <div class="hero-hud-data">
+            <div class="hud-data-row"><span class="hud-dl">SYS</span><span class="hud-dv hud-blink" id="sysStatus">ONLINE</span></div>
+            <div class="hud-data-row"><span class="hud-dl">BOTS</span><span class="hud-dv" id="hudBots">07</span></div>
+            <div class="hud-data-row"><span class="hud-dl">CPU</span><span class="hud-dv" id="hudCpu">--</span></div>
+        </div>
         <div class="hero-inner">
             <div class="terminal-bar">
                 <span class="dot r"></span>
@@ -1436,7 +1648,44 @@
                 <div class="modal-section-label">// CASOS DE USO REALES</div>
                 <div class="modal-examples" id="modalExamples"></div>
             </div>
-            <a href="#contacto" class="modal-cta" id="modalCta">[ SOLICITAR ESTE SERVICIO ]</a>
+            <div class="modal-section">
+                <div class="modal-section-label">// IMPACTO EN TU NEGOCIO</div>
+                <div class="modal-impact-grid" id="modalImpact"></div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-section-label">// CÓMO ADQUIRIR ESTE SERVICIO</div>
+                <div class="modal-acquire-grid">
+                    <div class="acquire-step">
+                        <span class="acquire-icon">📋</span>
+                        <div class="acquire-text">
+                            <strong>1. Regístrate</strong>
+                            <p>Completa el formulario con tus datos y cuéntanos qué quieres automatizar o desarrollar. Sin compromisos.</p>
+                        </div>
+                    </div>
+                    <div class="acquire-step">
+                        <span class="acquire-icon">📞</span>
+                        <div class="acquire-text">
+                            <strong>2. Asesoría Gratuita</strong>
+                            <p>Un desarrollador o asesor te contacta en menos de 12 horas para analizar tus requerimientos sin costo.</p>
+                        </div>
+                    </div>
+                    <div class="acquire-step">
+                        <span class="acquire-icon">💳</span>
+                        <div class="acquire-text">
+                            <strong>3. Financiamiento Flexible</strong>
+                            <p>Opciones de pago adaptadas a tu presupuesto. Nuestros desarrolladores se acoplan exactamente a lo que necesitas.</p>
+                        </div>
+                    </div>
+                    <div class="acquire-step">
+                        <span class="acquire-icon">🚀</span>
+                        <div class="acquire-text">
+                            <strong>4. Desarrollo &amp; Soporte</strong>
+                            <p>Construimos tu solución a medida con entregas parciales, capacitación y soporte post-lanzamiento incluido.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a href="#contacto" class="modal-cta" id="modalCta">[ QUIERO ESTE SERVICIO — ASESORÍA GRATUITA ]</a>
         </div>
     </div>
 
@@ -1656,7 +1905,13 @@
                     'Llenado automático de formularios y procesos web repetitivos',
                     'Descarga programada de datos para alimentar reportes o dashboards diarios',
                 ],
-                examples: ['Bot de precios e-commerce', 'Scraper de inmuebles', 'Extractor de contactos', 'Monitor de redes sociales', 'Automatización de registros', 'Dashboard de competencia']
+                examples: ['Bot de precios e-commerce', 'Scraper de inmuebles', 'Extractor de contactos', 'Monitor de redes sociales', 'Automatización de registros', 'Dashboard de competencia'],
+                impact: [
+                    { label: 'REEMPLAZA A', value: 'Un equipo de 10-20 personas extrayendo datos manualmente 8 horas al día' },
+                    { label: 'DISPONIBILIDAD', value: 'El bot trabaja 24/7 los 365 días del año sin descansos ni vacaciones' },
+                    { label: 'VELOCIDAD', value: 'Procesa en 1 hora lo que un humano tarda 1 semana en recopilar' },
+                    { label: 'COSTO', value: 'Una fracción de un salario mensual con precisión y velocidad incomparables' },
+                ]
             },
             {
                 num: '// 02', icon: '📊', title: 'Análisis Estadístico',
@@ -1670,7 +1925,13 @@
                     'Análisis de correlación entre variables clave del negocio',
                     'Dashboards interactivos que se actualizan solos con cada nuevo dato',
                 ],
-                examples: ['Reporte de ventas automático', 'Predicción de inventario', 'Segmentación de clientes', 'Análisis de rentabilidad', 'Modelo de churn', 'Forecast de mercado']
+                examples: ['Reporte de ventas automático', 'Predicción de inventario', 'Segmentación de clientes', 'Análisis de rentabilidad', 'Modelo de churn', 'Forecast de mercado'],
+                impact: [
+                    { label: 'REEMPLAZA A', value: 'Analistas dedicando días enteros a construir reportes manualmente en Excel' },
+                    { label: 'DISPONIBILIDAD', value: 'Reportes y dashboards listos automáticamente cada hora, día o semana' },
+                    { label: 'ESCALA', value: 'Procesa millones de registros en segundos que a un humano tomarían meses' },
+                    { label: 'PRECISIÓN', value: 'Cero errores de cálculo ni fórmulas rotas. Resultados reproducibles siempre' },
+                ]
             },
             {
                 num: '// 03', icon: '✈️', title: 'Telegram Integration',
@@ -1684,7 +1945,13 @@
                     'Consultas a bases de datos en tiempo real desde cualquier chat de Telegram',
                     'Flujos de aprobación y notificación interna para equipos de trabajo',
                 ],
-                examples: ['Bot de alertas de ventas', 'Notificador de leads', 'Control remoto de servidor', 'Bot de soporte 24/7', 'Monitor de inventario', 'Pipeline de aprobaciones']
+                examples: ['Bot de alertas de ventas', 'Notificador de leads', 'Control remoto de servidor', 'Bot de soporte 24/7', 'Monitor de inventario', 'Pipeline de aprobaciones'],
+                impact: [
+                    { label: 'REEMPLAZA A', value: 'Personal de guardia esperando revisar manualmente alertas y notificaciones' },
+                    { label: 'VELOCIDAD', value: 'Notificación instantánea en menos de 1 segundo cuando algo crítico ocurre' },
+                    { label: 'DISPONIBILIDAD', value: 'Tu negocio en tu bolsillo, controlado en tiempo real desde cualquier lugar' },
+                    { label: 'ALCANCE', value: 'Un solo bot gestiona miles de usuarios simultáneamente sin ningún esfuerzo' },
+                ]
             },
             {
                 num: '// 04', icon: '📄', title: 'Gestión Documental',
@@ -1698,7 +1965,13 @@
                     'Generación de documentos PDF personalizados en lote (certificados, informes, cartas)',
                     'Validación automática de datos en formularios y detección de errores',
                 ],
-                examples: ['Procesador de facturas', 'Organizador de contratos', 'Generador de certificados', 'Extractor de NIT/RUT', 'Conversor PDF a Excel', 'Archivador automático']
+                examples: ['Procesador de facturas', 'Organizador de contratos', 'Generador de certificados', 'Extractor de NIT/RUT', 'Conversor PDF a Excel', 'Archivador automático'],
+                impact: [
+                    { label: 'REEMPLAZA A', value: 'Personal procesando facturas, contratos o PDFs uno por uno manualmente' },
+                    { label: 'VELOCIDAD', value: 'Procesa cientos de documentos en el tiempo que toma abrir uno manualmente' },
+                    { label: 'PRECISIÓN', value: 'Extracción de datos sin errores de digitación ni registros duplicados' },
+                    { label: 'LIBERA', value: 'Tu equipo enfocado en tareas de mayor valor mientras el bot trabaja solo' },
+                ]
             },
             {
                 num: '// 05', icon: '🌐', title: 'Páginas Web',
@@ -1712,7 +1985,13 @@
                     'Despliegue continuo: al hacer cambios en el código se actualiza solo',
                     'Monitoreo de disponibilidad con alertas ante caídas del sitio',
                 ],
-                examples: ['Landing page corporativa', 'Portafolio profesional', 'Sitio de servicios', 'Catálogo de productos', 'Página de evento', 'Blog con CMS']
+                examples: ['Landing page corporativa', 'Portafolio profesional', 'Sitio de servicios', 'Catálogo de productos', 'Página de evento', 'Blog con CMS'],
+                impact: [
+                    { label: 'GENERA', value: 'Clientes potenciales las 24 horas mientras duermes, sin esfuerzo adicional' },
+                    { label: 'AUTOMATIZA', value: 'Captura de leads con notificación inmediata vía Telegram sin intervención humana' },
+                    { label: 'POSICIONAMIENTO', value: 'SEO optimizado para aparecer en Google orgánicamente desde el primer mes' },
+                    { label: 'RETORNO', value: 'Inversión que trabaja continuamente con resultados medibles y escalables' },
+                ]
             },
             {
                 num: '// 06', icon: '⚡', title: 'Aplicaciones Web',
@@ -1726,7 +2005,13 @@
                     'Notificaciones automáticas por email, SMS o Telegram según eventos del sistema',
                     'Exportación automática de reportes a Excel o PDF con un solo clic',
                 ],
-                examples: ['CRM personalizado', 'Dashboard de métricas', 'Sistema de inventario', 'Plataforma de reservas', 'Panel de facturación', 'Portal de clientes']
+                examples: ['CRM personalizado', 'Dashboard de métricas', 'Sistema de inventario', 'Plataforma de reservas', 'Panel de facturación', 'Portal de clientes'],
+                impact: [
+                    { label: 'REEMPLAZA A', value: 'Procesos manuales en hojas de Excel, papel o sistemas desactualizados' },
+                    { label: 'DIGITALIZA', value: 'Toda tu operación accesible desde cualquier dispositivo con internet' },
+                    { label: 'DISPONIBILIDAD', value: 'Tu equipo conectado y productivo desde cualquier lugar del mundo en tiempo real' },
+                    { label: 'DECISIONES', value: 'Datos en tiempo real para decidir más rápido y mejor que la competencia' },
+                ]
             },
             {
                 num: '// 07', icon: '🎨', title: 'Apps & Branding',
@@ -1740,7 +2025,13 @@
                     'Integración con pasarelas de pago, mapas y servicios externos',
                     'Sistema de fidelización con puntos, recompensas o descuentos automatizados',
                 ],
-                examples: ['App de delivery', 'App de reservas', 'Plataforma de cursos', 'Identidad corporativa', 'Logo + manual de marca', 'App con panel admin']
+                examples: ['App de delivery', 'App de reservas', 'Plataforma de cursos', 'Identidad corporativa', 'Logo + manual de marca', 'App con panel admin'],
+                impact: [
+                    { label: 'PRESENCIA', value: 'Tu marca profesional en el bolsillo de tus clientes las 24 horas del día' },
+                    { label: 'FIDELIZACIÓN', value: 'Sistema automático de notificaciones y recompensas que retiene y activa clientes' },
+                    { label: 'AUTOMATIZA', value: 'Pedidos, reservas y pagos gestionados automáticamente sin intervención humana' },
+                    { label: 'MARCA', value: 'Identidad visual cohesiva que genera confianza, diferenciación y recordación' },
+                ]
             },
         ];
 
@@ -1754,6 +2045,9 @@
             document.getElementById('modalDesc').textContent = s.desc;
             document.getElementById('modalAutomate').innerHTML = s.automate.map(a => `<li>${a}</li>`).join('');
             document.getElementById('modalExamples').innerHTML = s.examples.map(e => `<div class="modal-example-tag">${e}</div>`).join('');
+            document.getElementById('modalImpact').innerHTML = s.impact.map(i =>
+                `<div class="modal-impact-item"><strong>${i.label}</strong>${i.value}</div>`
+            ).join('');
             svcModal.classList.add('open');
             document.body.style.overflow = 'hidden';
         }
@@ -1871,6 +2165,32 @@
             });
         }, { threshold: 0.25 });
         document.querySelectorAll('.step').forEach(el => stepObs.observe(el));
+
+        // ── Hero HUD data animation ──────────────────────────────────────
+        (function() {
+            const statuses = ['ONLINE', 'PROCESSING', 'SCANNING', 'ANALYZING'];
+            let si = 0;
+            setInterval(() => {
+                const el = document.getElementById('sysStatus');
+                if (el) { si = (si + 1) % statuses.length; el.textContent = statuses[si]; }
+            }, 3200);
+
+            const cpuEl = document.getElementById('hudCpu');
+            if (cpuEl) {
+                setInterval(() => {
+                    cpuEl.textContent = (Math.random() * 35 + 12).toFixed(1) + '%';
+                }, 1600);
+            }
+
+            const botsEl = document.getElementById('hudBots');
+            if (botsEl) {
+                let n = 7;
+                setInterval(() => {
+                    n = Math.max(5, Math.min(14, n + (Math.random() > 0.5 ? 1 : -1)));
+                    botsEl.textContent = String(n).padStart(2, '0');
+                }, 4000);
+            }
+        })();
 
     </script>
 </body>
