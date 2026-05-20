@@ -2998,10 +2998,24 @@
             // Central hub
             const hub = { icon: '⚡', title: 'AUT CORE', num: '// CORE', x: 0, y: 0, baseX: 0, baseY: 0, r: 28, isHub: true, phase: 0 };
 
+            // Unique accent color + ad-tag per service
+            const SVC_COLORS = [
+                '0,212,255','160,80,255','30,160,240','80,230,120',
+                '255,190,0','200,80,255','255,100,130','255,130,50',
+                '0,220,180','100,255,80','60,120,255','255,55,55',
+            ];
+            const SVC_TAGS = [
+                '·IA·BOT·','·ML·','·API·','·OCR·',
+                '·WEB·','·PWA·','·UI/UX·','·24/7·',
+                '·ETL·','·SCRIPTS·','·PYTHON·','·VBA·',
+            ];
+            const SPOT_DUR = 3.2; // seconds spotlight stays on each node
             // Service nodes
-            const svcNodes = SERVICES_DATA.map(s => ({
+            const svcNodes = SERVICES_DATA.map((s, i) => ({
                 ...s, x: 0, y: 0, baseX: 0, baseY: 0,
-                r: 26, isHub: false, phase: Math.random() * Math.PI * 2
+                r: 28, isHub: false, phase: Math.random() * Math.PI * 2,
+                col: SVC_COLORS[i % SVC_COLORS.length],
+                tag2: SVC_TAGS[i % SVC_TAGS.length],
             }));
             const allNodes = [hub, ...svcNodes];
 
@@ -3038,15 +3052,26 @@
             setInterval(() => { while (pkts.length < 16) spawnPkt(); }, 1500);
 
             // Hover
-            let hov = null;
+            let hov = null, lastHov = null;
             canvas.addEventListener('mousemove', e => {
                 const r = canvas.getBoundingClientRect();
                 const mx = e.clientX - r.left, my = e.clientY - r.top;
-                hov = allNodes.find(n => Math.hypot(n.x - mx, n.y - my) < n.r + 14) || null;
+                hov = allNodes.find(n => Math.hypot(n.x - mx, n.y - my) < n.r + 16) || null;
                 canvas.style.cursor = hov ? 'pointer' : 'crosshair';
+                if (hov !== lastHov) {
+                    lastHov = hov;
+                    if (hov && !hov.isHub) {
+                        window.bgFxActivate && window.bgFxActivate(svcNodes.indexOf(hov));
+                    } else {
+                        window.bgFxDeactivate && window.bgFxDeactivate();
+                    }
+                }
             });
-            canvas.addEventListener('mouseleave', () => { hov = null; });
-            canvas.addEventListener('click',      () => { if (hov && !hov.isHub) openServiceModal(svcNodes.indexOf(hov)); else if (hov && hov.isHub) { window.openHubOverlay && window.openHubOverlay(); } });
+            canvas.addEventListener('mouseleave', () => {
+                hov = null; lastHov = null;
+                window.bgFxDeactivate && window.bgFxDeactivate();
+            });
+            canvas.addEventListener('click', () => { if (hov && !hov.isHub) openServiceModal(svcNodes.indexOf(hov)); else if (hov && hov.isHub) { window.openHubOverlay && window.openHubOverlay(); } });
 
             // Stats ticker
             setInterval(() => {
@@ -3086,21 +3111,30 @@
                     ctx.strokeStyle = 'rgba(0,212,255,0.018)'; ctx.lineWidth = 1; ctx.stroke();
                 }
 
-                // Float nodes
-                svcNodes.forEach(n => {
+                // Spotlight advertiser — cycles through each node like an ad
+                const spotIdx = Math.floor(t / SPOT_DUR) % svcNodes.length;
+                const spotT   = t % SPOT_DUR;
+                const spotFr  = Math.min(spotT / 0.5, 1) * Math.min((SPOT_DUR - spotT) / 0.5, 1);
+
+                // Float nodes with bounce for spotlit node
+                svcNodes.forEach((n, ni) => {
+                    const isSpot = ni === spotIdx;
+                    const jumpY  = isSpot ? Math.abs(Math.sin(spotT * Math.PI / SPOT_DUR * 3.5)) * -11 * spotFr : 0;
                     const fx = n.baseX + Math.sin(t * 0.42 + n.phase) * 6;
-                    const fy = n.baseY + Math.cos(t * 0.36 + n.phase * 1.2) * 5;
+                    const fy = n.baseY + Math.cos(t * 0.36 + n.phase * 1.2) * 5 + jumpY;
                     n.x = cx + (fx - cx) * ease;
                     n.y = cy + (fy - cy) * ease;
                 });
 
-                // Hub-to-node lines
-                svcNodes.forEach(n => {
-                    const act = n === hov || hub === hov;
+                // Hub-to-node lines (use node accent color when active/spotlit)
+                svcNodes.forEach((n, ni) => {
+                    const act = n === hov || hub === hov || ni === spotIdx;
+                    const nc  = n.col;
                     const g = ctx.createLinearGradient(hub.x, hub.y, n.x, n.y);
                     if (act) {
-                        g.addColorStop(0, `rgba(${NR},0.8)`); g.addColorStop(1, `rgba(${NR},0.12)`);
-                        ctx.lineWidth = 1.8; ctx.shadowColor = NEON; ctx.shadowBlur = 10;
+                        g.addColorStop(0, `rgba(${NR},0.85)`); g.addColorStop(1, `rgba(${nc},0.22)`);
+                        ctx.lineWidth = n === hov ? 2 : 1.5;
+                        ctx.shadowColor = `rgba(${nc},0.8)`; ctx.shadowBlur = 12;
                     } else {
                         g.addColorStop(0, `rgba(${NR},0.18)`); g.addColorStop(1, `rgba(${NR},0.03)`);
                         ctx.lineWidth = 0.6; ctx.shadowBlur = 0;
@@ -3143,67 +3177,103 @@
                     ctx.fill(); ctx.shadowBlur = 0;
                 });
 
-                // Service nodes
-                svcNodes.forEach(n => {
-                    const isH = n === hov;
-                    const br  = Math.sin(t * 1.5 + n.phase) * 1.5;
+                // Service nodes — with spotlight "ad" effect + unique colors
+                svcNodes.forEach((n, ni) => {
+                    const isH    = n === hov;
+                    const isSpot = ni === spotIdx;
+                    const active = isH || isSpot;
+                    const nc     = n.col;
+                    const br     = Math.sin(t * 1.5 + n.phase) * 1.5;
+                    const sFr    = isSpot ? spotFr : 0;
+
+                    // Spotlight radial aura
+                    if (active) {
+                        const aurR = n.r + 26 + sFr * 16;
+                        const g = ctx.createRadialGradient(n.x, n.y, n.r * 0.5, n.x, n.y, aurR);
+                        g.addColorStop(0, `rgba(${nc},${isH ? 0.22 : 0.14 * sFr})`);
+                        g.addColorStop(1, `rgba(${nc},0)`);
+                        ctx.beginPath(); ctx.arc(n.x, n.y, aurR, 0, Math.PI * 2);
+                        ctx.fillStyle = g; ctx.fill();
+                    }
 
                     // Multi-pulse rings
-                    for (let pi = 0; pi < 2; pi++) {
-                        const ph = ((t / (isH ? 0.75 : 1.3) + pi * 0.5 + n.phase * 0.12) % 1);
-                        const pr = n.r + ph * (isH ? 38 : 22);
-                        const pa = (isH ? 0.5 : 0.16) * (1 - ph);
+                    for (let pi = 0; pi < 3; pi++) {
+                        const speed = active ? 0.65 : 1.2;
+                        const ph = ((t / speed + pi * 0.33 + n.phase * 0.12) % 1);
+                        const pr = n.r + ph * (active ? 46 : 22);
+                        const pa = (active ? 0.48 : 0.13) * (1 - ph);
                         if (pa < 0.01) continue;
                         ctx.beginPath(); ctx.arc(n.x, n.y, pr, 0, Math.PI * 2);
-                        ctx.strokeStyle = `rgba(${NR},${pa.toFixed(3)})`;
+                        ctx.strokeStyle = `rgba(${nc},${pa.toFixed(3)})`;
                         ctx.lineWidth = 1; ctx.stroke();
                     }
 
-                    // Outer halo on hover
-                    if (isH) {
-                        ctx.beginPath(); ctx.arc(n.x, n.y, n.r + 18, 0, Math.PI * 2);
-                        ctx.strokeStyle = `rgba(${NR},0.18)`;
-                        ctx.lineWidth = 7; ctx.stroke();
-                    }
-
-                    // Body
-                    ctx.beginPath(); ctx.arc(n.x, n.y, n.r + (isH ? 4 : br * 0.3), 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(${NR},${isH ? 0.18 : 0.06})`; ctx.fill();
-                    ctx.strokeStyle = NEON; ctx.lineWidth = isH ? 2 : 1;
-                    ctx.shadowColor = NEON; ctx.shadowBlur = isH ? 24 : 7 + br;
+                    // Node body
+                    const nr = n.r + (isH ? 6 : br * 0.3 + sFr * 4);
+                    ctx.beginPath(); ctx.arc(n.x, n.y, nr, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${nc},${active ? 0.2 : 0.07})`; ctx.fill();
+                    ctx.strokeStyle = `rgba(${nc},${active ? 1 : 0.72})`;
+                    ctx.lineWidth = active ? 2.2 : 1.2;
+                    ctx.shadowColor = `rgba(${nc},1)`;
+                    ctx.shadowBlur = active ? 28 : 8 + br;
                     ctx.stroke(); ctx.shadowBlur = 0;
 
                     // Emoji icon
-                    ctx.font = `${isH ? 22 : 17}px serif`;
+                    ctx.font = `${active ? 24 : 18}px serif`;
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                    ctx.fillText(n.icon, n.x, n.y - 2);
+                    ctx.globalAlpha = active ? 1 : 0.88;
+                    ctx.fillText(n.icon, n.x, n.y - 1);
+                    ctx.globalAlpha = 1;
 
-                    // Num label above
-                    ctx.font = `${isH ? '700 8px' : '7px'} "JetBrains Mono", monospace`;
-                    ctx.fillStyle = `rgba(${NR},${isH ? 0.9 : 0.5})`;
-                    ctx.fillText(n.num, n.x, n.y - n.r - 11);
+                    // Num tag above
+                    ctx.font = `${active ? '700 8.5px' : '700 7px'} "JetBrains Mono", monospace`;
+                    ctx.fillStyle = `rgba(${nc},${active ? 1 : 0.52})`;
+                    ctx.shadowColor = `rgba(${nc},0.8)`; ctx.shadowBlur = active ? 6 : 0;
+                    ctx.fillText(n.num, n.x, n.y - n.r - 13);
+                    ctx.shadowBlur = 0;
 
-                    // Short title below (always visible)
-                    if (!isH) {
-                        ctx.font = '6px "JetBrains Mono", monospace';
-                        ctx.fillStyle = `rgba(${NR},0.28)`;
-                        ctx.textBaseline = 'top';
-                        ctx.fillText(n.title.split(' ')[0].toUpperCase().slice(0, 9), n.x, n.y + n.r + 7);
-                        ctx.textBaseline = 'middle';
-                    }
+                    // Short title below (always visible, larger on active)
+                    ctx.font = `${active ? '700 8px' : '600 6.5px'} "JetBrains Mono", monospace`;
+                    ctx.fillStyle = `rgba(${nc},${active ? 0.92 : 0.35})`;
+                    ctx.textBaseline = 'top';
+                    ctx.shadowColor = `rgba(${nc},0.7)`; ctx.shadowBlur = active ? 5 : 0;
+                    ctx.fillText(n.title.split(' ')[0].toUpperCase().slice(0, 9), n.x, n.y + n.r + 7);
+                    ctx.shadowBlur = 0; ctx.textBaseline = 'middle';
 
-                    // Title label below (hover)
+                    // Hover: full title badge
                     if (isH) {
                         const lbl = n.title.toUpperCase();
-                        ctx.font = '700 9px "JetBrains Mono", monospace';
+                        ctx.font = '700 9.5px "JetBrains Mono", monospace';
                         const lw = ctx.measureText(lbl).width;
-                        ctx.fillStyle = 'rgba(0,3,8,0.88)';
-                        ctx.fillRect(n.x - lw/2 - 7, n.y + n.r + 8, lw + 14, 17);
-                        ctx.strokeStyle = `rgba(${NR},0.38)`; ctx.lineWidth = 0.5;
-                        ctx.strokeRect(n.x - lw/2 - 7, n.y + n.r + 8, lw + 14, 17);
-                        ctx.fillStyle = '#e0f7ff';
-                        ctx.shadowColor = NEON; ctx.shadowBlur = 7;
-                        ctx.fillText(lbl, n.x, n.y + n.r + 17); ctx.shadowBlur = 0;
+                        ctx.fillStyle = 'rgba(0,3,8,0.9)';
+                        ctx.fillRect(n.x - lw/2 - 9, n.y + n.r + 22, lw + 18, 18);
+                        ctx.strokeStyle = `rgba(${nc},0.55)`; ctx.lineWidth = 0.8;
+                        ctx.strokeRect(n.x - lw/2 - 9, n.y + n.r + 22, lw + 18, 18);
+                        ctx.fillStyle = `rgba(${nc},1)`;
+                        ctx.shadowColor = `rgba(${nc},0.9)`; ctx.shadowBlur = 9;
+                        ctx.fillText(lbl, n.x, n.y + n.r + 31); ctx.shadowBlur = 0;
+                    }
+
+                    // Spotlight: floating "ad" badge (callout with service tag)
+                    if (isSpot && sFr > 0.12) {
+                        const bAlpha = sFr * 0.94;
+                        const badgeX = n.x;
+                        const badgeY = n.y - n.r - 32 - sFr * 8;
+                        ctx.font = '700 8px "JetBrains Mono", monospace';
+                        const bTxt = n.tag2 || '·IA·';
+                        const bw2  = ctx.measureText(bTxt).width;
+                        ctx.fillStyle = `rgba(0,3,8,${bAlpha * 0.9})`;
+                        ctx.fillRect(badgeX - bw2/2 - 6, badgeY - 9, bw2 + 12, 16);
+                        ctx.strokeStyle = `rgba(${nc},${bAlpha})`;
+                        ctx.lineWidth = 0.9; ctx.strokeRect(badgeX - bw2/2 - 6, badgeY - 9, bw2 + 12, 16);
+                        // Connector dot
+                        ctx.beginPath(); ctx.moveTo(badgeX, badgeY + 7); ctx.lineTo(badgeX, n.y - n.r - 14);
+                        ctx.strokeStyle = `rgba(${nc},${bAlpha * 0.45})`; ctx.lineWidth = 0.7; ctx.stroke();
+                        ctx.fillStyle = `rgba(${nc},${bAlpha})`;
+                        ctx.shadowColor = `rgba(${nc},0.9)`; ctx.shadowBlur = 8;
+                        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                        ctx.fillText(bTxt, badgeX, badgeY - 1);
+                        ctx.shadowBlur = 0;
                     }
                 });
 
@@ -3722,17 +3792,22 @@
                 raf = requestAnimationFrame(frame);
             }
 
+            function activate(i) {
+                curIdx = i; running = true; startTs = null;
+                bgEl.classList.add('on');
+                if (!raf) raf = requestAnimationFrame(frame);
+            }
+            function deactivate() {
+                running = false; bgEl.classList.remove('on');
+                if (raf) { cancelAnimationFrame(raf); raf = null; }
+                ctx.clearRect(0, 0, W, H);
+            }
+            window.bgFxActivate   = activate;
+            window.bgFxDeactivate = deactivate;
+
             document.querySelectorAll('.card').forEach((card, i) => {
-                card.addEventListener('mouseenter', () => {
-                    curIdx = i; running = true; startTs = null;
-                    bgEl.classList.add('on');
-                    if (!raf) raf = requestAnimationFrame(frame);
-                });
-                card.addEventListener('mouseleave', () => {
-                    running = false; bgEl.classList.remove('on');
-                    if (raf) { cancelAnimationFrame(raf); raf = null; }
-                    ctx.clearRect(0, 0, W, H);
-                });
+                card.addEventListener('mouseenter', () => activate(i));
+                card.addEventListener('mouseleave', deactivate);
             });
         })();
 
