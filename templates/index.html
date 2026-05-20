@@ -305,7 +305,11 @@
             text-transform: uppercase;
         }
 
-        .section-title span { color: var(--neon); }
+        .section-title span { color: var(--neon); animation: spanGlow 3s ease-in-out infinite; }
+        @keyframes spanGlow {
+            0%, 100% { text-shadow: 0 0 8px rgba(0,212,255,0.3); }
+            50%       { text-shadow: 0 0 22px rgba(0,212,255,0.85), 0 0 45px rgba(0,212,255,0.2); }
+        }
 
         .section-line {
             width: 50px;
@@ -358,7 +362,12 @@
         .card:nth-child(4) { transition-delay: 0.3s; }
         .card:nth-child(5) { transition-delay: 0.4s; }
         .card:nth-child(6) { transition-delay: 0.5s; }
-        .card:nth-child(7) { transition-delay: 0.6s; }
+        .card:nth-child(7)  { transition-delay: 0.6s; }
+        .card:nth-child(8)  { transition-delay: 0.7s; }
+        .card:nth-child(9)  { transition-delay: 0.8s; }
+        .card:nth-child(10) { transition-delay: 0.9s; }
+        .card:nth-child(11) { transition-delay: 1.0s; }
+        .card:nth-child(12) { transition-delay: 1.1s; }
 
         /* Scan-line sweep on hover */
         .card::before {
@@ -401,9 +410,26 @@
 
         .card-icon {
             font-size: 1.7rem;
-            margin-bottom: 0.9rem;
             display: block;
             filter: drop-shadow(0 0 6px rgba(0,212,255,0.4));
+            transition: transform 0.35s cubic-bezier(0.23,1,0.32,1);
+            position: relative; z-index: 2;
+        }
+        .card:hover .card-icon { transform: scale(1.2) rotate(-4deg); }
+
+        .card-icon-wrap {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 0.9rem;
+        }
+
+        .card-cv {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px; height: 80px;
+            pointer-events: none;
+            z-index: 3;
         }
 
         .card h3 {
@@ -504,18 +530,25 @@
 
         .form-group textarea {
             width: 100%;
-            background: transparent;
-            border: 1px solid #1a1a1a;
-            border-bottom-color: rgba(0,212,255,0.3);
-            color: #e0e0e0;
-            padding: 0.9rem 0;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(0,212,255,0.18);
+            color: var(--white);
+            padding: 0.85rem 1.1rem;
             font-family: inherit;
-            font-size: 0.78rem;
-            letter-spacing: 1px;
+            font-size: 0.83rem;
             outline: none;
-            resize: vertical;
-            min-height: 90px;
-            transition: border-color 0.3s;
+            resize: none;
+            min-height: 110px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-group textarea:focus {
+            border-color: var(--neon);
+            box-shadow: 0 0 12px rgba(0,212,255,0.1);
+        }
+        .form-group textarea::placeholder { color: #333; }
+        .desc-footer { display: flex; justify-content: flex-end; margin-top: 0.35rem; }
+        .desc-counter { font-size: 0.58rem; letter-spacing: 2px; color: rgba(0,212,255,0.3); transition: color 0.3s; }
+        .desc-counter.warn { color: rgba(255,180,0,0.6); }
         }
         .form-group textarea:focus { border-bottom-color: var(--neon); }
         .form-group textarea::placeholder { color: #333; }
@@ -1160,6 +1193,11 @@
             background-size: 60px 60px;
             pointer-events: none;
             z-index: 0;
+            animation: gridDrift 12s linear infinite;
+        }
+        @keyframes gridDrift {
+            0%   { background-position: 0 0, 0 0; }
+            100% { background-position: 60px 60px, 60px 60px; }
         }
 
         /* ── Jarvis HUD rotating rings ── */
@@ -1467,26 +1505,6 @@
         .custom-callout-btn:hover::before { left: 0; }
         .custom-callout-btn:hover { color: #000; }
 
-        /* ── Live Activity Feed ── */
-        .activity-feed {
-            position: fixed;
-            bottom: 1.2rem;
-            left: 1.2rem;
-            width: 276px;
-            background: rgba(0,0,0,0.88);
-            border: 1px solid rgba(0,212,255,0.14);
-            border-left: 2px solid var(--neon);
-            padding: 0.6rem 0.8rem;
-            font-size: 0.62rem;
-            line-height: 1.6;
-            z-index: 200;
-            pointer-events: none;
-        }
-        .activity-feed-header { color: var(--neon); letter-spacing: 3px; margin-bottom: 0.3rem; opacity: 0.55; }
-        .activity-log { overflow: hidden; }
-        .activity-log-line { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: rgba(0,212,255,0.4); }
-        .activity-log-line.new { color: rgba(0,255,190,0.9); }
-
         /* ── Technical HUD Overlay ── */
         .hud-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 150; }
         .hud-corner { position: absolute; font-size: 0.54rem; letter-spacing: 2px; color: rgba(0,212,255,0.2); line-height: 2; }
@@ -1553,9 +1571,39 @@
         .rgb-glitch-overlay.b { background: rgba(0,80,255,0.06); }
 
         /* ── Network Graph section ── */
-        .network-section { padding: 5rem 2rem; position: relative; overflow: hidden; }
-        .network-canvas { display: block; width: 100%; height: 420px; cursor: crosshair; }
-        .network-hint { text-align: center; margin-top: 1rem; font-size: 0.62rem; letter-spacing: 3px; color: rgba(0,212,255,0.28); }
+        .network-section {
+            padding: 5rem 2rem;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(ellipse at 50% 55%, rgba(0,212,255,0.04) 0%, transparent 68%);
+        }
+        .network-canvas { display: block; width: 100%; height: 500px; cursor: crosshair; }
+        .network-stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 3.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            border-top: 1px solid rgba(0,212,255,0.08);
+            padding-top: 1.5rem;
+        }
+        .net-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.56rem;
+            letter-spacing: 3px;
+            color: rgba(0,212,255,0.3);
+        }
+        .net-stat-val {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--neon);
+            letter-spacing: 2px;
+            text-shadow: 0 0 14px rgba(0,212,255,0.6);
+        }
+        .network-hint { text-align: center; margin-top: 1.2rem; font-size: 0.58rem; letter-spacing: 3px; color: rgba(0,212,255,0.2); }
 
         /* ── Footer ── */
         footer {
@@ -1577,12 +1625,6 @@
     <div class="cursor-ring" id="cursorRing"></div>
     <div class="page-scan"></div>
     <div class="scroll-bar" id="scrollBar"></div>
-
-    <!-- Activity Feed -->
-    <div class="activity-feed">
-        <div class="activity-feed-header">// SYSTEM LOG</div>
-        <div class="activity-log" id="activityLog"></div>
-    </div>
 
     <!-- HUD Overlay -->
     <div class="hud-overlay">
@@ -1792,6 +1834,13 @@
                 <p>Programas Python a medida: procesamiento de datos, herramientas CLI con interfaz, análisis con pandas y numpy, integraciones con APIs y lógica de negocio personalizada.</p>
                 <span class="card-tag">PYTHON · PANDAS · CLI · API · OOP</span>
             </div>
+            <div class="card">
+                <div class="card-num">// 12</div>
+                <span class="card-icon">📋</span>
+                <h3>Procesos Macros</h3>
+                <p>Grabación y ejecución de macros inteligentes: automatizamos flujos repetitivos en Excel, apps de escritorio e interfaces gráficas mediante RPA liviano. Un clic ejecuta secuencias complejas.</p>
+                <span class="card-tag">VBA · PYAUTOGUI · RPA · EXCEL</span>
+            </div>
         </div>
 
         <!-- Custom request callout -->
@@ -1815,6 +1864,12 @@
             <div class="section-line"></div>
         </div>
         <canvas class="network-canvas" id="networkCanvas"></canvas>
+        <div class="network-stats-row">
+            <div class="net-stat"><span class="net-stat-val" id="netNodes">11</span>MÓDULOS</div>
+            <div class="net-stat"><span class="net-stat-val" id="netConns">—</span>CONEXIONES ACTIVAS</div>
+            <div class="net-stat"><span class="net-stat-val" id="netPackets">—</span>PAQUETES / SEG</div>
+            <div class="net-stat"><span class="net-stat-val" style="color:#00ffaa;text-shadow:0 0 14px rgba(0,255,170,0.5)">ONLINE</span>ESTADO</div>
+        </div>
         <p class="network-hint">// HOVER SOBRE UN NODO PARA EXPLORAR &rarr; CLICK PARA VER DETALLES</p>
     </section>
 
@@ -1956,10 +2011,11 @@
                             <input type="hidden" name="telefono" id="telefonoFull">
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group" style="flex:1">
-                            <label for="descripcion">DESCRIPCIÓN DEL PROYECTO <span style="color:#333;font-size:0.65rem;letter-spacing:1px">(OPCIONAL)</span></label>
-                            <textarea id="descripcion" name="descripcion" placeholder="Cuéntanos qué necesitas automatizar o desarrollar. Entre más detalle, mejor podemos asesorarte..." rows="4"></textarea>
+                    <div class="form-row" style="grid-template-columns:1fr">
+                        <div class="form-group">
+                            <label for="descripcion">DESCRIPCIÓN DEL PROYECTO <span style="color:rgba(0,212,255,0.3);font-size:0.6rem;letter-spacing:1px">// OPCIONAL</span></label>
+                            <textarea id="descripcion" name="descripcion" maxlength="600" placeholder="Cuéntanos qué necesitas automatizar o desarrollar. Entre más detalle, mejor podemos asesorarte..."></textarea>
+                            <div class="desc-footer"><span class="desc-counter" id="descCounter">0 / 600</span></div>
                         </div>
                     </div>
                     <button type="submit" class="btn-submit">[ SOLICITAR ASESORÍA GRATUITA ]</button>
@@ -2239,6 +2295,18 @@
             document.getElementById('telefonoFull').value = `${selCountry.code} ${num}`;
         });
 
+        // Description character counter
+        (function() {
+            const ta = document.getElementById('descripcion');
+            const counter = document.getElementById('descCounter');
+            if (!ta || !counter) return;
+            ta.addEventListener('input', () => {
+                const len = ta.value.length;
+                counter.textContent = len + ' / 600';
+                counter.classList.toggle('warn', len > 500);
+            });
+        })();
+
         renderCountries();
 
         // ── Service Modal ────────────────────────────────────────
@@ -2461,6 +2529,26 @@
                     { label: 'CALIDAD', value: 'Código limpio, documentado y testeado que tu equipo puede mantener y escalar' },
                     { label: 'VELOCIDAD', value: 'De idea a herramienta funcional en días, no semanas, con iteraciones rápidas' },
                     { label: 'POTENCIA', value: 'El ecosistema más rico del mundo: miles de librerías para cualquier problema técnico' },
+                ]
+            },
+            {
+                num: '// 12', icon: '📋', title: 'Procesos Macros',
+                tag: 'VBA · PYAUTOGUI · RPA · EXCEL',
+                desc: 'Grabamos y automatizamos flujos de trabajo completos mediante macros inteligentes. Desde macros avanzadas en Excel y Office hasta RPA liviano con pyautogui que controla cualquier aplicación de escritorio. Un solo clic reemplaza decenas de pasos manuales repetitivos.',
+                automate: [
+                    'Macros Excel que procesan, consolidan y generan reportes automáticamente al abrir',
+                    'RPA de escritorio: automatización de clics, formularios y navegación en cualquier app',
+                    'Generación de reportes Word/PowerPoint automáticos desde plantillas y datos dinámicos',
+                    'Integración entre aplicaciones Office sin exportar ni importar archivos manualmente',
+                    'Procesamiento masivo de hojas Excel con lógica de negocio personalizada',
+                    'Ejecución programada de macros en horarios definidos sin intervención humana',
+                ],
+                examples: ['Macro de consolidación', 'Bot de formularios GUI', 'Reporte Word auto', 'Integrador Office', 'Procesador de hojas', 'RPA de escritorio'],
+                impact: [
+                    { label: 'ELIMINA', value: 'Copiar y pegar datos entre aplicaciones: el error más costoso y frecuente' },
+                    { label: 'VELOCIDAD', value: 'Ejecuta en segundos lo que manualmente toma horas de trabajo repetitivo' },
+                    { label: 'SIN CÓDIGO', value: 'Soluciones para usuarios de negocio sin necesidad de programación avanzada' },
+                    { label: 'INTEGRACIÓN', value: 'Une tus aplicaciones existentes sin cambiar ni reemplazar ningún sistema' },
                 ]
             },
         ];
@@ -2738,47 +2826,6 @@
             })();
         })();
 
-        // ── Live Activity Feed ───────────────────────────────────────────────
-        (function() {
-            const LINES = [
-                'INIT: AUT core services loaded',
-                'SYNC: Telegram API connected',
-                'PROC: Scraping module → standby',
-                'AUTH: Session token validated',
-                'EXEC: Bot scheduler active',
-                'DATA: Pipeline ETL idle',
-                'NET: WebSocket handshake OK',
-                'CACHE: 128 MB allocated',
-                'TASK: Cron job registered',
-                'API: REST endpoint /v2/run',
-                'MON: CPU 14.2% MEM 38%',
-                'ALERT: New lead detected',
-                'PUSH: Notification dispatched',
-                'DB: Query executed in 3ms',
-                'FILE: 847 records processed',
-                'BOT: Automation cycle complete',
-                'SCAN: 0 errors detected',
-                'SYS: Uptime 99.97%',
-                'LOG: Event stored to database',
-                'RPC: Remote call → success',
-            ];
-            const log = document.getElementById('activityLog');
-            if (!log) return;
-            let n = 0;
-            function addLine() {
-                const el = document.createElement('span');
-                el.className = 'activity-log-line new';
-                const ts = new Date().toISOString().substr(11, 8);
-                el.textContent = '[' + ts + '] ' + LINES[n % LINES.length];
-                log.appendChild(el);
-                setTimeout(() => el.classList.remove('new'), 500);
-                n++;
-                while (log.children.length > 7) log.removeChild(log.firstChild);
-            }
-            for (let i = 0; i < 5; i++) setTimeout(addLine, i * 200);
-            setInterval(addLine, 2800);
-        })();
-
         // ── Technical HUD Overlay ───────────────────────────────────────────
         (function() {
             const bl = document.getElementById('hudBL');
@@ -2894,74 +2941,246 @@
             const canvas = document.getElementById('networkCanvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            const NEON = '#00d4ff';
-            function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; place(); }
-            const nodes = SERVICES_DATA.map(s => ({ ...s, x: 0, y: 0, r: 22 }));
+            const NEON = '#00d4ff', NR = '0,212,255';
+
+            function resize() {
+                canvas.width  = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                place();
+            }
+
+            // Central hub
+            const hub = { icon: '⚡', title: 'AUT CORE', num: '// CORE', x: 0, y: 0, baseX: 0, baseY: 0, r: 28, isHub: true, phase: 0 };
+
+            // Service nodes
+            const svcNodes = SERVICES_DATA.map(s => ({
+                ...s, x: 0, y: 0, baseX: 0, baseY: 0,
+                r: 20, isHub: false, phase: Math.random() * Math.PI * 2
+            }));
+            const allNodes = [hub, ...svcNodes];
+
             function place() {
                 const W = canvas.width, H = canvas.height;
-                nodes.forEach((n, i) => {
-                    const angle = (i / nodes.length) * Math.PI * 2 - Math.PI / 2;
-                    n.x = W / 2 + W * 0.38 * Math.cos(angle);
-                    n.y = H / 2 + H * 0.38 * Math.sin(angle);
+                hub.x = hub.baseX = W / 2;
+                hub.y = hub.baseY = H / 2;
+                const rad = Math.min(W, H) * 0.36;
+                svcNodes.forEach((n, i) => {
+                    const a = (i / svcNodes.length) * Math.PI * 2 - Math.PI / 2;
+                    n.x = n.baseX = W / 2 + rad * Math.cos(a);
+                    n.y = n.baseY = H / 2 + rad * Math.sin(a);
                 });
             }
             resize();
-            window.addEventListener('resize', () => { resize(); });
-            let hov = null, mx = -999, my = -999;
+            window.addEventListener('resize', resize);
+
+            // Starfield
+            const stars = Array.from({ length: 70 }, () => ({
+                x: Math.random(), y: Math.random(),
+                r: Math.random() * 1.1 + 0.2,
+                a: Math.random() * 0.28 + 0.04
+            }));
+
+            // Data packets
+            const pkts = [];
+            function spawnPkt() {
+                const toHub = Math.random() < 0.55;
+                const svc = svcNodes[Math.floor(Math.random() * svcNodes.length)];
+                pkts.push({ from: toHub ? svc : hub, to: toHub ? hub : svc,
+                    t: Math.random() * 0.4, speed: 0.0025 + Math.random() * 0.004 });
+            }
+            for (let i = 0; i < 12; i++) spawnPkt();
+            setInterval(() => { while (pkts.length < 16) spawnPkt(); }, 1500);
+
+            // Hover
+            let hov = null;
             canvas.addEventListener('mousemove', e => {
-                const rect = canvas.getBoundingClientRect();
-                mx = e.clientX - rect.left; my = e.clientY - rect.top;
-                hov = nodes.find(n => Math.hypot(n.x - mx, n.y - my) < n.r + 12) || null;
+                const r = canvas.getBoundingClientRect();
+                const mx = e.clientX - r.left, my = e.clientY - r.top;
+                hov = allNodes.find(n => Math.hypot(n.x - mx, n.y - my) < n.r + 14) || null;
                 canvas.style.cursor = hov ? 'pointer' : 'crosshair';
             });
             canvas.addEventListener('mouseleave', () => { hov = null; });
-            canvas.addEventListener('click', () => { if (hov) openServiceModal(nodes.indexOf(hov)); });
+            canvas.addEventListener('click',      () => { if (hov && !hov.isHub) openServiceModal(svcNodes.indexOf(hov)); });
+
+            // Stats ticker
+            setInterval(() => {
+                const nc = document.getElementById('netConns');
+                const np = document.getElementById('netPackets');
+                if (nc) nc.textContent = 55 + Math.floor(Math.random() * 22);
+                if (np) np.textContent = 12 + Math.floor(Math.random() * 9);
+            }, 1700);
+
+            // Intro
+            let introT = 0;
+            const INTRO = 100;
+
             function draw() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                // Connections
-                nodes.forEach((a, i) => {
-                    nodes.forEach((b, j) => {
+                if (introT < INTRO) introT++;
+                const ease = 1 - Math.pow(1 - introT / INTRO, 3);
+                const W = canvas.width, H = canvas.height;
+                const t = Date.now() / 1000;
+                const cx = W / 2, cy = H / 2;
+                ctx.clearRect(0, 0, W, H);
+
+                // Stars
+                stars.forEach(s => {
+                    ctx.beginPath(); ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${NR},${s.a})`; ctx.fill();
+                });
+
+                // Radial grid
+                for (let rr = 70; rr < Math.max(W, H) * 0.72; rr += 90) {
+                    ctx.beginPath(); ctx.arc(cx, cy, rr, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(0,212,255,0.032)'; ctx.lineWidth = 1; ctx.stroke();
+                }
+                for (let ai = 0; ai < 12; ai++) {
+                    const ang = (ai / 12) * Math.PI * 2;
+                    ctx.beginPath(); ctx.moveTo(cx, cy);
+                    ctx.lineTo(cx + Math.cos(ang) * Math.max(W, H), cy + Math.sin(ang) * Math.max(W, H));
+                    ctx.strokeStyle = 'rgba(0,212,255,0.018)'; ctx.lineWidth = 1; ctx.stroke();
+                }
+
+                // Float nodes
+                svcNodes.forEach(n => {
+                    const fx = n.baseX + Math.sin(t * 0.42 + n.phase) * 6;
+                    const fy = n.baseY + Math.cos(t * 0.36 + n.phase * 1.2) * 5;
+                    n.x = cx + (fx - cx) * ease;
+                    n.y = cy + (fy - cy) * ease;
+                });
+
+                // Hub-to-node lines
+                svcNodes.forEach(n => {
+                    const act = n === hov || hub === hov;
+                    const g = ctx.createLinearGradient(hub.x, hub.y, n.x, n.y);
+                    if (act) {
+                        g.addColorStop(0, `rgba(${NR},0.8)`); g.addColorStop(1, `rgba(${NR},0.12)`);
+                        ctx.lineWidth = 1.8; ctx.shadowColor = NEON; ctx.shadowBlur = 10;
+                    } else {
+                        g.addColorStop(0, `rgba(${NR},0.18)`); g.addColorStop(1, `rgba(${NR},0.03)`);
+                        ctx.lineWidth = 0.6; ctx.shadowBlur = 0;
+                    }
+                    ctx.beginPath(); ctx.moveTo(hub.x, hub.y); ctx.lineTo(n.x, n.y);
+                    ctx.strokeStyle = g; ctx.stroke(); ctx.shadowBlur = 0;
+                });
+
+                // Cross-connections between close neighbors
+                svcNodes.forEach((a, i) => {
+                    svcNodes.forEach((b, j) => {
                         if (j <= i) return;
-                        const active = hov && (a === hov || b === hov);
-                        const dist = Math.hypot(a.x - b.x, a.y - b.y);
-                        const alpha = active ? 0.55 : Math.max(0, 0.13 - dist / 2800);
-                        if (alpha < 0.01) return;
+                        if (Math.hypot(a.baseX - b.baseX, a.baseY - b.baseY) > Math.min(W, H) * 0.34) return;
+                        const act = a === hov || b === hov;
                         ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
-                        ctx.strokeStyle = 'rgba(0,212,255,' + alpha + ')';
-                        ctx.lineWidth = active ? 1.5 : 0.5;
-                        ctx.shadowBlur = active ? 8 : 0; ctx.shadowColor = NEON;
+                        ctx.strokeStyle = `rgba(${NR},${act ? 0.28 : 0.04})`;
+                        ctx.lineWidth = act ? 1 : 0.35;
+                        ctx.shadowBlur = act ? 4 : 0; ctx.shadowColor = NEON;
                         ctx.stroke(); ctx.shadowBlur = 0;
                     });
                 });
-                // Nodes
-                nodes.forEach(n => {
+
+                // Packets + tails
+                pkts.forEach(p => {
+                    p.t += p.speed;
+                    if (p.t > 1) p.t = 0;
+                    for (let ti = 5; ti >= 0; ti--) {
+                        const tt = Math.max(0, p.t - ti * 0.013);
+                        const tx = p.from.x + (p.to.x - p.from.x) * tt;
+                        const ty = p.from.y + (p.to.y - p.from.y) * tt;
+                        ctx.beginPath(); ctx.arc(tx, ty, Math.max(0.2, 1.8 - ti * 0.25), 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(${NR},${(0.65 - ti * 0.09).toFixed(2)})`;
+                        ctx.fill();
+                    }
+                    const hx = p.from.x + (p.to.x - p.from.x) * p.t;
+                    const hy = p.from.y + (p.to.y - p.from.y) * p.t;
+                    ctx.beginPath(); ctx.arc(hx, hy, 2.8, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(220,245,255,0.95)';
+                    ctx.shadowColor = NEON; ctx.shadowBlur = 14;
+                    ctx.fill(); ctx.shadowBlur = 0;
+                });
+
+                // Service nodes
+                svcNodes.forEach(n => {
                     const isH = n === hov;
-                    ctx.beginPath(); ctx.arc(n.x, n.y, n.r * (isH ? 1.2 : 1), 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(0,212,255,' + (isH ? 0.1 : 0.04) + ')';
-                    ctx.fill();
+                    const br  = Math.sin(t * 1.5 + n.phase) * 1.5;
+
+                    // Multi-pulse rings
+                    for (let pi = 0; pi < 2; pi++) {
+                        const ph = ((t / (isH ? 0.75 : 1.3) + pi * 0.5 + n.phase * 0.12) % 1);
+                        const pr = n.r + ph * (isH ? 38 : 22);
+                        const pa = (isH ? 0.5 : 0.16) * (1 - ph);
+                        if (pa < 0.01) continue;
+                        ctx.beginPath(); ctx.arc(n.x, n.y, pr, 0, Math.PI * 2);
+                        ctx.strokeStyle = `rgba(${NR},${pa.toFixed(3)})`;
+                        ctx.lineWidth = 1; ctx.stroke();
+                    }
+
+                    // Outer halo on hover
+                    if (isH) {
+                        ctx.beginPath(); ctx.arc(n.x, n.y, n.r + 18, 0, Math.PI * 2);
+                        ctx.strokeStyle = `rgba(${NR},0.18)`;
+                        ctx.lineWidth = 7; ctx.stroke();
+                    }
+
+                    // Body
+                    ctx.beginPath(); ctx.arc(n.x, n.y, n.r + (isH ? 4 : br * 0.3), 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${NR},${isH ? 0.18 : 0.06})`; ctx.fill();
                     ctx.strokeStyle = NEON; ctx.lineWidth = isH ? 2 : 1;
-                    ctx.shadowColor = NEON; ctx.shadowBlur = isH ? 18 : 6;
+                    ctx.shadowColor = NEON; ctx.shadowBlur = isH ? 24 : 7 + br;
                     ctx.stroke(); ctx.shadowBlur = 0;
-                    ctx.font = (isH ? '15' : '13') + 'px serif';
+
+                    // Emoji
+                    ctx.font = `${isH ? 16 : 13}px serif`;
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                     ctx.fillText(n.icon, n.x, n.y);
-                    ctx.font = '8px "JetBrains Mono", monospace';
-                    ctx.fillStyle = 'rgba(0,212,255,' + (isH ? 0.8 : 0.28) + ')';
-                    ctx.fillText(n.num, n.x, n.y - n.r - 8);
+
+                    // Num label above
+                    ctx.font = '7px "JetBrains Mono", monospace';
+                    ctx.fillStyle = `rgba(${NR},${isH ? 0.85 : 0.3})`;
+                    ctx.fillText(n.num, n.x, n.y - n.r - 10);
+
+                    // Title label below (hover)
                     if (isH) {
-                        ctx.font = '700 10px "JetBrains Mono", monospace';
-                        ctx.fillStyle = '#e0f7ff'; ctx.shadowColor = NEON; ctx.shadowBlur = 8;
-                        ctx.fillText(n.title.toUpperCase(), n.x, n.y + n.r + 16);
-                        ctx.shadowBlur = 0;
+                        const lbl = n.title.toUpperCase();
+                        ctx.font = '700 9px "JetBrains Mono", monospace';
+                        const lw = ctx.measureText(lbl).width;
+                        ctx.fillStyle = 'rgba(0,3,8,0.88)';
+                        ctx.fillRect(n.x - lw/2 - 7, n.y + n.r + 8, lw + 14, 17);
+                        ctx.strokeStyle = `rgba(${NR},0.38)`; ctx.lineWidth = 0.5;
+                        ctx.strokeRect(n.x - lw/2 - 7, n.y + n.r + 8, lw + 14, 17);
+                        ctx.fillStyle = '#e0f7ff';
+                        ctx.shadowColor = NEON; ctx.shadowBlur = 7;
+                        ctx.fillText(lbl, n.x, n.y + n.r + 17); ctx.shadowBlur = 0;
                     }
                 });
-                // Pulse ring on hover
-                if (hov) {
-                    const t = (Date.now() % 1200) / 1200;
-                    ctx.beginPath(); ctx.arc(hov.x, hov.y, hov.r + t * 32, 0, Math.PI * 2);
-                    ctx.strokeStyle = 'rgba(0,212,255,' + (0.45 * (1 - t)) + ')';
-                    ctx.lineWidth = 1.5; ctx.stroke();
+
+                // Hub: rotating arcs
+                for (let ri = 0; ri < 3; ri++) {
+                    const ang = t * (0.55 + ri * 0.22) * (ri % 2 === 0 ? 1 : -1);
+                    ctx.save(); ctx.translate(hub.x, hub.y); ctx.rotate(ang);
+                    ctx.beginPath(); ctx.arc(0, 0, hub.r + 12 + ri * 10, 0, Math.PI * (1.3 + ri * 0.1));
+                    ctx.strokeStyle = `rgba(${NR},${0.24 - ri * 0.06})`;
+                    ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore();
                 }
+                // Hub pulse ring
+                const hubPh = (t * 0.7) % 1;
+                ctx.beginPath(); ctx.arc(hub.x, hub.y, hub.r + hubPh * 50, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(${NR},${(0.3 * (1 - hubPh)).toFixed(3)})`;
+                ctx.lineWidth = 1; ctx.stroke();
+                // Hub body
+                const hubBr = Math.sin(t * 1.8) * 2;
+                ctx.beginPath(); ctx.arc(hub.x, hub.y, hub.r + hubBr, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${NR},${hub === hov ? 0.22 : 0.12})`; ctx.fill();
+                ctx.strokeStyle = NEON; ctx.lineWidth = 2;
+                ctx.shadowColor = NEON; ctx.shadowBlur = hub === hov ? 38 : 20 + hubBr * 2;
+                ctx.stroke(); ctx.shadowBlur = 0;
+                // Hub text
+                ctx.font = '700 10px "JetBrains Mono", monospace';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillStyle = NEON; ctx.shadowColor = NEON; ctx.shadowBlur = 14;
+                ctx.fillText('AUT', hub.x, hub.y - 5);
+                ctx.font = '600 7px "JetBrains Mono", monospace';
+                ctx.fillStyle = `rgba(${NR},0.65)`; ctx.shadowBlur = 5;
+                ctx.fillText('CORE', hub.x, hub.y + 6); ctx.shadowBlur = 0;
+
                 requestAnimationFrame(draw);
             }
             draw();
@@ -2994,6 +3213,243 @@
             });
             panel.addEventListener('mouseenter', () => clearTimeout(closeTimer));
             panel.addEventListener('mouseleave', hidePanel);
+        })();
+
+        // ── Card icon animations ──────────────────────────────────────────────
+        (function() {
+            const NEON = '#00d4ff', NR = '0,212,255';
+            const W = 80, H = 80;
+
+            // Inject .card-icon-wrap + canvas into every card
+            document.querySelectorAll('.card-icon').forEach(el => {
+                const wrap = document.createElement('div');
+                wrap.className = 'card-icon-wrap';
+                el.parentNode.insertBefore(wrap, el);
+                wrap.appendChild(el);
+                const cv = document.createElement('canvas');
+                cv.className = 'card-cv'; cv.width = W; cv.height = H;
+                wrap.appendChild(cv);
+            });
+
+            function easeOut(t) { return 1 - Math.pow(1 - t, 2); }
+
+            // One animation function per service (index 0–11)
+            const animFns = [
+                // 01 🕸️ Scraping: spider silk threads + rings
+                function(ctx, t) {
+                    const cx=W/2, cy=H/2;
+                    for (let i=0; i<8; i++) {
+                        const a = (i/8)*Math.PI*2;
+                        const r = easeOut(Math.min(t*2,1)) * 30 * (t>0.6 ? 1-(t-0.6)/0.4 : 1);
+                        ctx.beginPath(); ctx.moveTo(cx,cy);
+                        ctx.lineTo(cx+Math.cos(a)*r, cy+Math.sin(a)*r);
+                        ctx.strokeStyle=`rgba(${NR},${(1-t)*0.55})`; ctx.lineWidth=0.8; ctx.stroke();
+                    }
+                    [11,21,31].forEach((rad,ri) => {
+                        const p = easeOut(Math.min(t*2.5-ri*0.2,1));
+                        const r = rad*p*(t>0.65 ? 1-(t-0.65)/0.35 : 1);
+                        if (r<0.5) return;
+                        ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+                        ctx.strokeStyle=`rgba(${NR},${(0.4-ri*0.1)*(1-t)})`; ctx.lineWidth=0.7; ctx.stroke();
+                    });
+                },
+                // 02 📊 Stats: rising bars
+                function(ctx, t) {
+                    const cx=W/2, cy=H/2+10;
+                    const bHts=[0.55,0.95,0.72,0.42,0.82]; const bw=7, gap=3;
+                    const tw=bHts.length*(bw+gap)-gap;
+                    bHts.forEach((h,i) => {
+                        const p = easeOut(Math.max(0,Math.min((t-i*0.1)/0.5,1)));
+                        const shrink = t>0.7 ? (t-0.7)/0.3 : 0;
+                        const bh = p*h*28*(1-shrink);
+                        const x = cx-tw/2+i*(bw+gap);
+                        ctx.fillStyle=`rgba(${NR},${(1-shrink*0.85)*0.8})`;
+                        ctx.fillRect(x, cy-bh, bw, bh);
+                        ctx.fillStyle=`rgba(${NR},0.95)`;
+                        ctx.fillRect(x, cy-bh, bw, 1.5);
+                    });
+                },
+                // 03 ✈️ Telegram: plane arc + trail
+                function(ctx, t) {
+                    const cx=W/2, cy=H/2;
+                    const p=easeOut(Math.min(t*1.3,1));
+                    const sx=cx-28,sy=cy+20,cpx=cx,cpy=cy-18,ex=cx,ey=cy;
+                    for (let tr=4; tr>=0; tr--) {
+                        const tp=Math.max(0,p-tr*0.06);
+                        const tx=(1-tp)*(1-tp)*sx+2*(1-tp)*tp*cpx+tp*tp*ex;
+                        const ty=(1-tp)*(1-tp)*sy+2*(1-tp)*tp*cpy+tp*tp*ey;
+                        ctx.beginPath(); ctx.arc(tx,ty,Math.max(0.1,1.5-tr*0.25),0,Math.PI*2);
+                        ctx.fillStyle=`rgba(${NR},${(0.5-tr*0.1)*(t<0.7?1:1-(t-0.7)/0.3)})`; ctx.fill();
+                    }
+                    const sc=t<0.7?1:1-(t-0.7)/0.3;
+                    const x=(1-p)*(1-p)*sx+2*(1-p)*p*cpx+p*p*ex;
+                    const y=(1-p)*(1-p)*sy+2*(1-p)*p*cpy+p*p*ey;
+                    ctx.save(); ctx.translate(x,y); ctx.scale(sc*0.9,sc*0.9);
+                    ctx.font='14px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+                    ctx.globalAlpha=sc*0.9; ctx.fillText('✈️',0,0); ctx.restore();
+                },
+                // 04 📄 Docs: fanning pages
+                function(ctx, t) {
+                    const cx=W/2, cy=H/2;
+                    [-1,0,1].forEach((off,i) => {
+                        const p=easeOut(Math.max(0,Math.min((t-i*0.12)*2,1)));
+                        const fan=p<0.65?p/0.65:1-(p-0.65)/0.35;
+                        const angle=off*fan*0.38;
+                        ctx.save();
+                        ctx.translate(cx+Math.sin(angle)*off*9, cy-Math.abs(off)*fan*5);
+                        ctx.rotate(angle);
+                        const pw=11,ph=15;
+                        ctx.fillStyle=`rgba(${NR},${fan*0.07})`;
+                        ctx.strokeStyle=`rgba(${NR},${fan*0.65})`; ctx.lineWidth=0.8;
+                        ctx.fillRect(-pw/2,-ph/2,pw,ph); ctx.strokeRect(-pw/2,-ph/2,pw,ph);
+                        for (let li=0;li<3;li++) {
+                            ctx.beginPath(); ctx.moveTo(-pw/2+2,-ph/2+3+li*4); ctx.lineTo(pw/2-2,-ph/2+3+li*4);
+                            ctx.strokeStyle=`rgba(${NR},${fan*0.28})`; ctx.stroke();
+                        }
+                        ctx.restore();
+                    });
+                },
+                // 05 🌐 Web: globe orbit rings
+                function(ctx, t) {
+                    const cx=W/2, cy=H/2;
+                    const sc=t<0.15?t/0.15:(t<0.78?1:1-(t-0.78)/0.22);
+                    ctx.save(); ctx.translate(cx,cy);
+                    ctx.beginPath(); ctx.ellipse(0,0,30*sc,9*sc,t*Math.PI*2.8,0,Math.PI*2);
+                    ctx.strokeStyle=`rgba(${NR},${sc*0.72})`; ctx.lineWidth=1.3; ctx.stroke();
+                    ctx.beginPath(); ctx.ellipse(0,0,9*sc,30*sc,0,0,Math.PI*2);
+                    ctx.strokeStyle=`rgba(${NR},${sc*0.45})`; ctx.lineWidth=1; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(0,0,32*sc,0,Math.PI*2);
+                    ctx.strokeStyle=`rgba(${NR},${sc*0.2})`; ctx.lineWidth=0.7; ctx.stroke();
+                    ctx.restore();
+                },
+                // 06 ⚡ Apps: spark burst
+                function(ctx, t) {
+                    const cx=W/2, cy=H/2;
+                    const sp=t<0.5?easeOut(t/0.5):1-(t-0.5)/0.5;
+                    [0,Math.PI/2,Math.PI,3*Math.PI/2].forEach(a => {
+                        ctx.beginPath(); ctx.moveTo(cx,cy);
+                        ctx.lineTo(cx+Math.cos(a)*30*sp, cy+Math.sin(a)*30*sp);
+                        ctx.strokeStyle=`rgba(${NR},${sp*0.85})`; ctx.lineWidth=2;
+                        ctx.shadowColor=NEON; ctx.shadowBlur=6; ctx.stroke(); ctx.shadowBlur=0;
+                    });
+                    [Math.PI/4,3*Math.PI/4,5*Math.PI/4,7*Math.PI/4].forEach(a => {
+                        ctx.beginPath(); ctx.moveTo(cx,cy);
+                        ctx.lineTo(cx+Math.cos(a)*18*sp, cy+Math.sin(a)*18*sp);
+                        ctx.strokeStyle=`rgba(${NR},${sp*0.4})`; ctx.lineWidth=1; ctx.stroke();
+                    });
+                    if (t<0.25) { ctx.beginPath(); ctx.arc(cx,cy,(1-t/0.25)*14,0,Math.PI*2); ctx.fillStyle=`rgba(${NR},${(1-t/0.25)*0.35})`; ctx.fill(); }
+                },
+                // 07 🎨 Branding: orbiting colored dots
+                function(ctx, t) {
+                    const cx=W/2, cy=H/2;
+                    const sc=t<0.15?t/0.15:(t<0.78?1:1-(t-0.78)/0.22);
+                    ['0,212,255','160,80,255','255,80,120'].forEach((c,i) => {
+                        const a=(i/3)*Math.PI*2+t*Math.PI*3.2;
+                        ctx.beginPath(); ctx.arc(cx+Math.cos(a)*24*sc, cy+Math.sin(a)*24*sc, 4.5*sc, 0, Math.PI*2);
+                        ctx.fillStyle=`rgba(${c},${sc*0.9})`;
+                        ctx.shadowColor=`rgba(${c},0.9)`; ctx.shadowBlur=8; ctx.fill(); ctx.shadowBlur=0;
+                    });
+                },
+                // 08 🔧 Support: spinning gear
+                function(ctx, t) {
+                    const cx=W/2, cy=H/2;
+                    const sc=t<0.15?t/0.15:(t<0.78?1:1-(t-0.78)/0.22);
+                    ctx.save(); ctx.translate(cx,cy); ctx.rotate(t*Math.PI*3.5);
+                    const teeth=8, R=26*sc, ri=17*sc;
+                    ctx.beginPath();
+                    for (let i=0;i<teeth*2;i++) {
+                        const angle=(i/(teeth*2))*Math.PI*2;
+                        const rad=i%2===0?R:ri;
+                        i===0?ctx.moveTo(Math.cos(angle)*rad,Math.sin(angle)*rad):ctx.lineTo(Math.cos(angle)*rad,Math.sin(angle)*rad);
+                    }
+                    ctx.closePath(); ctx.strokeStyle=`rgba(${NR},${sc*0.72})`; ctx.lineWidth=1.3; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(0,0,7*sc,0,Math.PI*2); ctx.strokeStyle=`rgba(${NR},${sc*0.5})`; ctx.stroke();
+                    ctx.restore();
+                },
+                // 09 🗃️ Data migration: flowing dots
+                function(ctx, t) {
+                    const cy=H/2;
+                    for (let i=0;i<7;i++) {
+                        const offset=((i/7+t*1.7)%1);
+                        const x=4+offset*72; const y=cy-8+(i%3)*8;
+                        const a=offset<0.08?offset/0.08:(offset>0.92?(1-offset)/0.08:1);
+                        ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2);
+                        ctx.fillStyle=`rgba(${NR},${a*0.82})`;
+                        ctx.shadowColor=NEON; ctx.shadowBlur=5; ctx.fill(); ctx.shadowBlur=0;
+                    }
+                },
+                // 10 🖥️ Scripts: terminal typing
+                function(ctx, t) {
+                    const cx=W/2, cy=H/2;
+                    const sc=t<0.88?1:1-(t-0.88)/0.12;
+                    ctx.font='7px "JetBrains Mono",monospace';
+                    ctx.textAlign='left'; ctx.textBaseline='top';
+                    ['> run.py','> init()','> OK ✓'].forEach((line,i) => {
+                        const p=easeOut(Math.max(0,Math.min((t-i*0.22)/0.18,1)));
+                        const chars=Math.round(p*line.length);
+                        if (chars<=0) return;
+                        ctx.fillStyle=`rgba(${NR},${sc*0.9})`;
+                        ctx.fillText(line.slice(0,chars), cx-22, cy-14+i*11);
+                    });
+                    if (Math.floor(t*8)%2===0 && t<0.88) { ctx.fillStyle=`rgba(${NR},0.9)`; ctx.fillRect(cx+13,cy-14,4,8); }
+                },
+                // 11 🐍 Python: snake wave + head
+                function(ctx, t) {
+                    const cx=W/2, cy=H/2;
+                    const sc=t<0.85?1:1-(t-0.85)/0.15;
+                    ctx.beginPath();
+                    for (let xi=0;xi<=40;xi++) {
+                        const px=cx-28+(xi/40)*56;
+                        const py=cy+Math.sin((xi/40)*Math.PI*3+t*Math.PI*5)*10;
+                        xi===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+                    }
+                    ctx.strokeStyle=`rgba(${NR},${sc*0.7})`; ctx.lineWidth=2.5;
+                    ctx.shadowColor=NEON; ctx.shadowBlur=7; ctx.stroke(); ctx.shadowBlur=0;
+                    const hp=Math.min(t*1.6,1);
+                    const hx=cx-28+hp*56;
+                    const hy=cy+Math.sin(hp*Math.PI*3+t*Math.PI*5)*10;
+                    ctx.beginPath(); ctx.arc(hx,hy,4.5*sc,0,Math.PI*2);
+                    ctx.fillStyle=`rgba(${NR},${sc*0.95})`;
+                    ctx.shadowColor=NEON; ctx.shadowBlur=10; ctx.fill(); ctx.shadowBlur=0;
+                },
+                // 12 📋 Macros: recording sweep + REC
+                function(ctx, t) {
+                    const cx=W/2, cy=H/2;
+                    ctx.beginPath(); ctx.arc(cx,cy,30,0,Math.PI*2);
+                    ctx.strokeStyle=`rgba(${NR},0.08)`; ctx.lineWidth=1; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(cx,cy,30,-Math.PI/2,-Math.PI/2+t*Math.PI*2);
+                    ctx.strokeStyle=`rgba(${NR},0.6)`; ctx.lineWidth=2; ctx.stroke();
+                    const pulse=Math.sin(t*Math.PI*8)*0.5+0.5;
+                    ctx.beginPath(); ctx.arc(cx-12,cy+12,4+pulse*2,0,Math.PI*2);
+                    ctx.fillStyle=`rgba(255,65,65,${0.6+pulse*0.4})`;
+                    ctx.shadowColor='#ff4040'; ctx.shadowBlur=7+pulse*5; ctx.fill(); ctx.shadowBlur=0;
+                    if (t>0.06) {
+                        ctx.font='bold 7px "JetBrains Mono",monospace';
+                        ctx.textAlign='left'; ctx.textBaseline='middle';
+                        ctx.fillStyle=`rgba(255,65,65,${Math.min(t*10,1)*0.9})`;
+                        ctx.fillText('REC', cx-6, cy+12);
+                    }
+                },
+            ];
+
+            // Per-card hover → start/stop animation loop
+            document.querySelectorAll('.card').forEach((card, i) => {
+                const cv = card.querySelector('.card-cv');
+                if (!cv || !animFns[i]) return;
+                const ctx = cv.getContext('2d');
+                let raf=null, running=false, startTs=null;
+                function frame(ts) {
+                    if (!running) return;
+                    if (!startTs) startTs=ts;
+                    const t=Math.min((ts-startTs)/950,1);
+                    ctx.clearRect(0,0,W,H);
+                    try { animFns[i](ctx,t); } catch(e) {}
+                    if (t<1) { raf=requestAnimationFrame(frame); }
+                    else { startTs=null; raf=requestAnimationFrame(frame); } // loop
+                }
+                card.addEventListener('mouseenter', () => { running=true; if (!raf) raf=requestAnimationFrame(frame); });
+                card.addEventListener('mouseleave', () => { running=false; if(raf){cancelAnimationFrame(raf);raf=null;} ctx.clearRect(0,0,W,H); });
+            });
         })();
 
     </script>
