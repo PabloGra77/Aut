@@ -373,9 +373,89 @@
                 ctx.shadowColor = `rgba(${it.c},0.7)`;
                 ctx.shadowBlur = it.alpha * 9;
                 ctx.fillText(it.name, pos.x, pos.y + 25);
+
                 ctx.shadowBlur = 0;
                 ctx.textBaseline = 'middle';
             });
+
+            // ── PROMOTIONAL OVERLAY ────────────────────────────────────────
+
+            // TOP SCROLLING TICKER
+            const TICKER = '  🏆 #1 EN COLOMBIA  ·  MEJORES DESARROLLADORES  ·  IA + AUTOMATIZACIÓN  ·  COMPETENCIA INTERNACIONAL  ·  PYTHON · REACT · DOCKER · ML  ·  ABIERTOS A COLABORACIONES  ·  PROFESIONALES DE CLASE MUNDIAL  ·  COLOMBIA → MUNDO  ·  ';
+            ctx.font = '600 9px "JetBrains Mono", monospace';
+            const tkW = ctx.measureText(TICKER).width;
+            const tkX = W - ((t * 44) % (tkW + W));
+            ctx.fillStyle = 'rgba(0,212,255,0.038)';
+            ctx.fillRect(0, 0, W, 26);
+            ctx.beginPath(); ctx.moveTo(0, 26); ctx.lineTo(W, 26);
+            ctx.strokeStyle = 'rgba(0,212,255,0.12)'; ctx.lineWidth = 0.7; ctx.stroke();
+            ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'rgba(0,212,255,0.62)';
+            ctx.shadowColor = 'rgba(0,212,255,0.5)'; ctx.shadowBlur = 4;
+            ctx.fillText(TICKER + TICKER, tkX, 13);
+            ctx.shadowBlur = 0;
+
+            // BOTTOM PULSE TAGLINE
+            const btA = 0.32 + Math.sin(t * 1.1) * 0.14;
+            ctx.font = '600 8.5px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+            ctx.fillStyle = `rgba(0,212,255,${btA})`;
+            ctx.shadowColor = 'rgba(0,212,255,0.7)'; ctx.shadowBlur = btA * 14;
+            ctx.fillText('// LOS MEJORES DE COLOMBIA · TECNOLOGÍA DE CLASE MUNDIAL · LÍDERES EN AUTOMATIZACIÓN //', W/2, H - 14);
+            ctx.shadowBlur = 0;
+
+            // CORNER CLAIM BADGES (4 corners, each cycles its own claims)
+            const CCLAIMS = [
+                ['// #1 EN COLOMBIA', '// LÍDERES NACIONALES', '// ÉLITE TÉCNICA'],
+                ['// NIVEL INTERNACIONAL', '// WORLD CLASS CODE', '// COMPETING GLOBALLY'],
+                ['// COLABORACIONES ABIERTAS', '// EQUIPO COMPROMETIDO', '// PARTNERS WELCOME'],
+                ['// 100% PROFESIONAL', '// CÓDIGO LIMPIO', '// ENTREGA GARANTIZADA'],
+            ];
+            const CNRS = [
+                { x: 22,    y: H * 0.16, ax: 'left'  },
+                { x: W - 22, y: H * 0.16, ax: 'right' },
+                { x: 22,    y: H * 0.84, ax: 'left'  },
+                { x: W - 22, y: H * 0.84, ax: 'right' },
+            ];
+            const CD = 4.0;
+            CNRS.forEach((c, ci) => {
+                const off   = ci * (CD / 4);
+                const phase = (t + off) % CD;
+                const cyc   = Math.floor((t + off) / CD) % 3;
+                const a     = Math.min(phase / 0.5, 1) * Math.min((CD - phase) / 0.5, 1);
+                if (a < 0.01) return;
+                const nc = ci % 2 === 0 ? '0,212,255' : '80,220,255';
+                const text = CCLAIMS[ci][cyc];
+                ctx.font = '700 9px "JetBrains Mono", monospace';
+                ctx.textAlign = c.ax; ctx.textBaseline = 'middle';
+                ctx.fillStyle = `rgba(${nc},${a * 0.72})`;
+                ctx.shadowColor = `rgba(${nc},0.9)`; ctx.shadowBlur = a * 11;
+                ctx.fillText(text, c.x, c.y);
+                ctx.shadowBlur = 0;
+                // Underline accent bar
+                const tw = ctx.measureText(text).width;
+                const lx = c.ax === 'left' ? c.x : c.x - tw;
+                ctx.beginPath(); ctx.moveTo(lx, c.y + 11); ctx.lineTo(lx + tw, c.y + 11);
+                ctx.strokeStyle = `rgba(${nc},${a * 0.28})`; ctx.lineWidth = 0.7; ctx.stroke();
+            });
+
+            // SIDE LABELS (rotated — left and right edges)
+            const sA = 0.2 + Math.sin(t * 0.75) * 0.07;
+            ctx.save();
+            ctx.translate(14, H / 2); ctx.rotate(-Math.PI / 2);
+            ctx.font = '600 7.5px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillStyle = `rgba(0,212,255,${sA})`;
+            ctx.fillText('AUTOMATIZACIÓN INTELIGENTE · COLOMBIA · MEJORES DESARROLLADORES · PYTHON · IA', 0, 0);
+            ctx.restore();
+
+            ctx.save();
+            ctx.translate(W - 14, H / 2); ctx.rotate(Math.PI / 2);
+            ctx.font = '600 7.5px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillStyle = `rgba(0,212,255,${sA})`;
+            ctx.fillText('COMPETING GLOBALLY · WORLD CLASS · 100% PROFESIONAL · REACT · DOCKER · FLASK', 0, 0);
+            ctx.restore();
 
             requestAnimationFrame(frame);
         }
