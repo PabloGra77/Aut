@@ -1577,7 +1577,7 @@
             overflow: hidden;
             background: radial-gradient(ellipse at 50% 55%, rgba(0,212,255,0.04) 0%, transparent 68%);
         }
-        .network-canvas { display: block; width: 100%; height: 500px; cursor: crosshair; }
+        .network-canvas { display: block; width: 100%; height: 580px; cursor: crosshair; }
         .network-stats-row {
             display: flex;
             justify-content: center;
@@ -1617,6 +1617,43 @@
         }
 
         footer span { color: rgba(0,212,255,0.35); }
+
+        /* ── Hub Company Overlay ── */
+        #hubOverlay {
+            position: fixed; inset: 0; z-index: 300;
+            display: none; opacity: 0;
+            transition: opacity 0.5s;
+        }
+        #hubOverlay.open { opacity: 1; }
+        #hubCv {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            display: block;
+            background: rgba(0,2,6,0.96);
+            cursor: crosshair;
+        }
+        .hub-close {
+            position: absolute; bottom: 3rem; left: 50%;
+            transform: translateX(-50%);
+            background: none;
+            border: 1px solid rgba(0,212,255,0.25);
+            color: rgba(0,212,255,0.45);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem; letter-spacing: 4px;
+            padding: 0.6rem 2.2rem; cursor: pointer; z-index: 1;
+            transition: border-color 0.25s, color 0.25s, box-shadow 0.25s;
+        }
+        .hub-close:hover { border-color: var(--neon); color: var(--neon); box-shadow: 0 0 18px rgba(0,212,255,0.2); }
+
+        /* ── BG FX canvas (full-page card hover effects) ── */
+        #bgFx {
+            position: fixed; inset: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 2; opacity: 0;
+            transition: opacity 0.3s;
+        }
+        #bgFx.on { opacity: 1; }
     </style>
 </head>
 <body>
@@ -1660,6 +1697,15 @@
         <div class="sidepanel-bar-wrap"><div class="sidepanel-bar" id="spBar"></div></div>
         <div class="sidepanel-bar-pct" id="spPct"></div>
         <div class="sidepanel-keys" id="spKeys"></div>
+    </div>
+
+    <!-- Background FX canvas (full-page card hover effects) -->
+    <canvas id="bgFx"></canvas>
+
+    <!-- Hub Company Overlay -->
+    <div id="hubOverlay">
+        <canvas id="hubCv"></canvas>
+        <button class="hub-close" id="hubClose">[ ESC — CERRAR ]</button>
     </div>
 
     <!-- Nav -->
@@ -2955,7 +3001,7 @@
             // Service nodes
             const svcNodes = SERVICES_DATA.map(s => ({
                 ...s, x: 0, y: 0, baseX: 0, baseY: 0,
-                r: 20, isHub: false, phase: Math.random() * Math.PI * 2
+                r: 26, isHub: false, phase: Math.random() * Math.PI * 2
             }));
             const allNodes = [hub, ...svcNodes];
 
@@ -2963,7 +3009,7 @@
                 const W = canvas.width, H = canvas.height;
                 hub.x = hub.baseX = W / 2;
                 hub.y = hub.baseY = H / 2;
-                const rad = Math.min(W, H) * 0.36;
+                const rad = Math.min(W, H) * 0.41;
                 svcNodes.forEach((n, i) => {
                     const a = (i / svcNodes.length) * Math.PI * 2 - Math.PI / 2;
                     n.x = n.baseX = W / 2 + rad * Math.cos(a);
@@ -3000,7 +3046,7 @@
                 canvas.style.cursor = hov ? 'pointer' : 'crosshair';
             });
             canvas.addEventListener('mouseleave', () => { hov = null; });
-            canvas.addEventListener('click',      () => { if (hov && !hov.isHub) openServiceModal(svcNodes.indexOf(hov)); });
+            canvas.addEventListener('click',      () => { if (hov && !hov.isHub) openServiceModal(svcNodes.indexOf(hov)); else if (hov && hov.isHub) { window.openHubOverlay && window.openHubOverlay(); } });
 
             // Stats ticker
             setInterval(() => {
@@ -3127,15 +3173,24 @@
                     ctx.shadowColor = NEON; ctx.shadowBlur = isH ? 24 : 7 + br;
                     ctx.stroke(); ctx.shadowBlur = 0;
 
-                    // Emoji
-                    ctx.font = `${isH ? 16 : 13}px serif`;
+                    // Emoji icon
+                    ctx.font = `${isH ? 22 : 17}px serif`;
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                    ctx.fillText(n.icon, n.x, n.y);
+                    ctx.fillText(n.icon, n.x, n.y - 2);
 
                     // Num label above
-                    ctx.font = '7px "JetBrains Mono", monospace';
-                    ctx.fillStyle = `rgba(${NR},${isH ? 0.85 : 0.3})`;
-                    ctx.fillText(n.num, n.x, n.y - n.r - 10);
+                    ctx.font = `${isH ? '700 8px' : '7px'} "JetBrains Mono", monospace`;
+                    ctx.fillStyle = `rgba(${NR},${isH ? 0.9 : 0.5})`;
+                    ctx.fillText(n.num, n.x, n.y - n.r - 11);
+
+                    // Short title below (always visible)
+                    if (!isH) {
+                        ctx.font = '6px "JetBrains Mono", monospace';
+                        ctx.fillStyle = `rgba(${NR},0.28)`;
+                        ctx.textBaseline = 'top';
+                        ctx.fillText(n.title.split(' ')[0].toUpperCase().slice(0, 9), n.x, n.y + n.r + 7);
+                        ctx.textBaseline = 'middle';
+                    }
 
                     // Title label below (hover)
                     if (isH) {
@@ -3449,6 +3504,491 @@
                 }
                 card.addEventListener('mouseenter', () => { running=true; if (!raf) raf=requestAnimationFrame(frame); });
                 card.addEventListener('mouseleave', () => { running=false; if(raf){cancelAnimationFrame(raf);raf=null;} ctx.clearRect(0,0,W,H); });
+            });
+        })();
+
+        // ── BG FX: Full-page card hover ambient animations ───────────────────
+        (function() {
+            const bgEl = document.getElementById('bgFx');
+            if (!bgEl) return;
+            const ctx = bgEl.getContext('2d');
+            const NR = '0,212,255', NEON = '#00d4ff';
+            let W, H;
+            function resize() { bgEl.width = W = window.innerWidth; bgEl.height = H = window.innerHeight; }
+            resize(); window.addEventListener('resize', resize);
+            let curIdx = -1, raf = null, running = false, startTs = null;
+
+            const fns = [
+                // 0 🕸️ Web: cobweb threads spreading from corners
+                t => {
+                    const anchors = [[0.08,0.1],[0.92,0.07],[0.88,0.91],[0.06,0.88],[0.5,0.02]];
+                    anchors.forEach(([ax,ay]) => {
+                        for(let i=0;i<10;i++){
+                            const a=(i/10)*Math.PI*2;
+                            ctx.beginPath(); ctx.moveTo(ax*W,ay*H);
+                            ctx.lineTo(ax*W+Math.cos(a)*Math.max(W,H)*0.65, ay*H+Math.sin(a)*Math.max(W,H)*0.65);
+                            ctx.strokeStyle=`rgba(${NR},0.028)`; ctx.lineWidth=0.7; ctx.stroke();
+                        }
+                        [0.2,0.38,0.58].forEach(f=>{
+                            ctx.beginPath(); ctx.arc(ax*W,ay*H,Math.max(W,H)*f,0,Math.PI*2);
+                            ctx.strokeStyle=`rgba(${NR},0.018)`; ctx.lineWidth=0.7; ctx.stroke();
+                        });
+                    });
+                    const p=(t*0.25)%1;
+                    ctx.beginPath(); ctx.arc(W*p,H*(0.1+Math.sin(p*Math.PI*3)*0.06),4,0,Math.PI*2);
+                    ctx.fillStyle=`rgba(${NR},0.4)`; ctx.fill();
+                },
+                // 1 📊 Stats: giant bars rising at bottom
+                t => {
+                    const n=11, bw=W/n;
+                    for(let i=0;i<n;i++){
+                        const h=(0.28+0.5*Math.abs(Math.sin(t*0.65+i*0.45)))*H*0.62;
+                        ctx.fillStyle=`rgba(${NR},0.042)`;
+                        ctx.fillRect(i*bw+2,H-h,bw-4,h);
+                        ctx.fillStyle=`rgba(${NR},0.14)`;
+                        ctx.fillRect(i*bw+2,H-h,bw-4,2);
+                        ctx.fillStyle=`rgba(${NR},0.06)`;
+                        ctx.fillRect(i*bw+2,H-h,bw-4,Math.min(10,h));
+                    }
+                },
+                // 2 ✈️ Telegram: large plane with particle trail across full screen
+                t => {
+                    const p=(t*0.11)%1;
+                    const sx=-80,sy=H*0.35,cpx=W*0.42,cpy=-H*0.1,ex=W+80,ey=H*0.07;
+                    for(let ti=35;ti>=0;ti--){
+                        const tt=Math.max(0,p-ti*0.0022);
+                        const tx=(1-tt)*(1-tt)*sx+2*(1-tt)*tt*cpx+tt*tt*ex;
+                        const ty=(1-tt)*(1-tt)*sy+2*(1-tt)*tt*cpy+tt*tt*ey;
+                        ctx.beginPath(); ctx.arc(tx,ty,Math.max(0.1,3-ti*0.07),0,Math.PI*2);
+                        ctx.fillStyle=`rgba(${NR},${Math.max(0,0.32-ti*0.008)})`; ctx.fill();
+                    }
+                    const x=(1-p)*(1-p)*sx+2*(1-p)*p*cpx+p*p*ex;
+                    const y=(1-p)*(1-p)*sy+2*(1-p)*p*cpy+p*p*ey;
+                    ctx.font='34px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+                    ctx.globalAlpha=0.35; ctx.fillText('✈️',x,y); ctx.globalAlpha=1;
+                },
+                // 3 📄 Docs: pages floating across full screen
+                t => {
+                    for(let i=0;i<8;i++){
+                        const ph=((t*0.16+i/8)%1);
+                        const x=W*(0.06+i*0.125)+Math.sin(t*0.55+i*1.4)*38;
+                        const y=H*(1-ph*1.12)-55;
+                        const ang=Math.sin(t*0.4+i)*0.22;
+                        if(y<-110||y>H+80) continue;
+                        ctx.save(); ctx.translate(x,y); ctx.rotate(ang);
+                        ctx.fillStyle=`rgba(${NR},0.04)`; ctx.strokeStyle=`rgba(${NR},0.1)`; ctx.lineWidth=1;
+                        ctx.fillRect(-21,-28,42,56); ctx.strokeRect(-21,-28,42,56);
+                        for(let li=0;li<3;li++){ctx.beginPath();ctx.moveTo(-13,-18+li*14);ctx.lineTo(13,-18+li*14);ctx.strokeStyle=`rgba(${NR},0.06)`;ctx.stroke();}
+                        ctx.restore();
+                    }
+                },
+                // 4 🌐 Web pages: large wireframe globe
+                t => {
+                    const cx=W/2, cy=H/2, R=Math.min(W,H)*0.36;
+                    ctx.save(); ctx.translate(cx,cy);
+                    for(let i=0;i<7;i++){
+                        const a=t*0.22+(i/7)*Math.PI;
+                        ctx.beginPath(); ctx.ellipse(0,0,R*Math.abs(Math.sin(a+Math.PI/2)),R,a,0,Math.PI*2);
+                        ctx.strokeStyle=`rgba(${NR},0.04)`; ctx.lineWidth=1; ctx.stroke();
+                    }
+                    [0.32,0.62,0.87].forEach(ry=>{
+                        const yr=R*ry, xr=Math.sqrt(Math.max(0,R*R-yr*yr));
+                        ctx.beginPath(); ctx.ellipse(0,yr,xr,xr*0.28,0,0,Math.PI*2);
+                        ctx.strokeStyle=`rgba(${NR},0.03)`; ctx.lineWidth=0.8; ctx.stroke();
+                        ctx.beginPath(); ctx.ellipse(0,-yr,xr,xr*0.28,0,0,Math.PI*2);
+                        ctx.strokeStyle=`rgba(${NR},0.03)`; ctx.lineWidth=0.8; ctx.stroke();
+                    });
+                    ctx.beginPath(); ctx.arc(0,0,R,0,Math.PI*2);
+                    ctx.strokeStyle=`rgba(${NR},0.06)`; ctx.lineWidth=1.3; ctx.stroke();
+                    ctx.restore();
+                },
+                // 5 ⚡ Apps: branching electricity from center
+                t => {
+                    function bolt(x1,y1,x2,y2,d,a){
+                        if(d===0){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=`rgba(${NR},${a})`;ctx.lineWidth=0.7;ctx.stroke();return;}
+                        const len=Math.hypot(x2-x1,y2-y1);
+                        const mx=(x1+x2)/2+Math.sin(t*6+d*31)*len*0.26;
+                        const my=(y1+y2)/2+Math.cos(t*5+d*23)*len*0.26;
+                        bolt(x1,y1,mx,my,d-1,a*0.75); bolt(mx,my,x2,y2,d-1,a*0.75);
+                        if(d===2&&Math.random()<0.3){const bx=mx+Math.cos(t*8+d)*len*0.3,by=my+Math.sin(t*7+d)*len*0.3;bolt(mx,my,bx,by,d-1,a*0.38);}
+                    }
+                    const cx=W/2,cy=H/2, r=Math.min(W,H)*0.44;
+                    for(let i=0;i<8;i++) bolt(cx,cy,cx+Math.cos((i/8)*Math.PI*2)*r,cy+Math.sin((i/8)*Math.PI*2)*r,3,0.07);
+                },
+                // 6 🎨 Branding: color particles floating
+                t => {
+                    const cols=['0,212,255','140,70,255','255,70,120','0,215,140'];
+                    for(let i=0;i<45;i++){
+                        const ph=((t*0.14+i*0.022)%1);
+                        const x=W*((i*0.137+Math.sin(i*2.1)*0.12)%1);
+                        const y=H*(1-ph*1.1)+10;
+                        if(y>H+12||y<-12) continue;
+                        ctx.beginPath(); ctx.arc(x,y,3+Math.sin(i*1.7)*1.5,0,Math.PI*2);
+                        ctx.fillStyle=`rgba(${cols[i%4]},0.18)`; ctx.fill();
+                    }
+                },
+                // 7 🔧 Support: giant spinning gear pair
+                t => {
+                    const cx=W/2,cy=H/2,R=Math.min(W,H)*0.38,ri=R*0.68,teeth=26;
+                    ctx.save(); ctx.translate(cx,cy); ctx.rotate(t*0.12);
+                    ctx.beginPath();
+                    for(let i=0;i<teeth*2;i++){const a=(i/(teeth*2))*Math.PI*2;const r=i%2===0?R:ri;i===0?ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r):ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);}
+                    ctx.closePath(); ctx.strokeStyle=`rgba(${NR},0.045)`; ctx.lineWidth=1; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(0,0,R*0.3,0,Math.PI*2); ctx.strokeStyle=`rgba(${NR},0.04)`; ctx.stroke();
+                    ctx.restore();
+                    const R2=R*0.42,ri2=R2*0.68,t2=14;
+                    ctx.save(); ctx.translate(cx+R+R2*0.92,cy); ctx.rotate(-t*0.12*(R/R2)*0.9);
+                    ctx.beginPath();
+                    for(let i=0;i<t2*2;i++){const a=(i/(t2*2))*Math.PI*2;const r=i%2===0?R2:ri2;i===0?ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r):ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);}
+                    ctx.closePath(); ctx.strokeStyle=`rgba(${NR},0.035)`; ctx.lineWidth=1; ctx.stroke();
+                    ctx.restore();
+                },
+                // 8 🗃️ Data: horizontal streaming dots
+                t => {
+                    for(let row=0;row<9;row++){
+                        const y=H*(0.08+row*0.105);
+                        const spd=0.18+row*0.024;
+                        for(let i=0;i<15;i++){
+                            const off=((i/15+t*spd)%1);
+                            const x=off*W;
+                            const a=off<0.04?off/0.04:(off>0.96?(1-off)/0.04:1);
+                            ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2);
+                            ctx.fillStyle=`rgba(${NR},${a*0.12})`; ctx.fill();
+                        }
+                    }
+                },
+                // 9 🖥️ Scripts: matrix code rain
+                t => {
+                    const cols=Math.floor(W/16);
+                    ctx.font='11px "JetBrains Mono",monospace';
+                    const CH='01ABCDEFアウト{}[]<>/\\_.';
+                    for(let col=0;col<cols;col++){
+                        const x=col*16+6;
+                        const off=((col*0.233+t*0.35)%1);
+                        const y=off*H;
+                        ctx.fillStyle=`rgba(${NR},0.15)`;
+                        ctx.fillText(CH[Math.floor((t*8+col*3.7)%CH.length)],x,y);
+                        for(let tr=1;tr<5;tr++){
+                            if(y-tr*14<0) continue;
+                            ctx.fillStyle=`rgba(${NR},${0.07-tr*0.014})`;
+                            ctx.fillText(CH[Math.floor((t*5+col*2.1+tr)%CH.length)],x,y-tr*14);
+                        }
+                    }
+                },
+                // 10 🐍 Python: massive snake wave full width
+                t => {
+                    ctx.beginPath();
+                    for(let xi=0;xi<=120;xi++){
+                        const px=(xi/120)*W;
+                        const py=H*0.5+Math.sin((xi/120)*Math.PI*4+t*2.5)*H*0.14;
+                        xi===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+                    }
+                    ctx.strokeStyle=`rgba(${NR},0.14)`; ctx.lineWidth=5;
+                    ctx.shadowColor=NEON; ctx.shadowBlur=15; ctx.stroke(); ctx.shadowBlur=0;
+                    const hp=(t*0.28)%1;
+                    const hx=hp*W, hy=H*0.5+Math.sin(hp*Math.PI*4+t*2.5)*H*0.14;
+                    ctx.beginPath(); ctx.arc(hx,hy,10,0,Math.PI*2);
+                    ctx.fillStyle=`rgba(${NR},0.4)`;
+                    ctx.shadowColor=NEON; ctx.shadowBlur=20; ctx.fill(); ctx.shadowBlur=0;
+                },
+                // 11 📋 Macros: recording sweep + scan lines
+                t => {
+                    const cx=W/2,cy=H/2,R=Math.min(W,H)*0.44;
+                    ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2);
+                    ctx.strokeStyle=`rgba(${NR},0.025)`; ctx.lineWidth=1.5; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(cx,cy,R,-Math.PI/2,-Math.PI/2+(t*0.4%1)*Math.PI*2);
+                    ctx.strokeStyle=`rgba(${NR},0.08)`; ctx.lineWidth=2.5; ctx.stroke();
+                    for(let i=0;i<4;i++){
+                        const scanY=((t*0.28+i*0.25)%1)*H;
+                        ctx.beginPath(); ctx.moveTo(0,scanY); ctx.lineTo(W,scanY);
+                        ctx.strokeStyle=`rgba(${NR},0.03)`; ctx.lineWidth=1; ctx.stroke();
+                    }
+                    const pulse=Math.sin(t*Math.PI*5)*0.5+0.5;
+                    ctx.beginPath(); ctx.arc(W*0.92,H*0.09,12+pulse*4,0,Math.PI*2);
+                    ctx.fillStyle=`rgba(255,55,55,${0.18+pulse*0.18})`; ctx.fill();
+                    ctx.font=`bold 18px "JetBrains Mono",monospace`;
+                    ctx.textAlign='right'; ctx.textBaseline='middle';
+                    ctx.fillStyle=`rgba(255,55,55,${0.2+pulse*0.15})`;
+                    ctx.fillText('⦿ REC',W*0.97,H*0.09);
+                },
+            ];
+
+            function frame(ts) {
+                if (!running) return;
+                if (!startTs) startTs = ts;
+                const t = (ts - startTs) / 1000;
+                ctx.clearRect(0, 0, W, H);
+                if (fns[curIdx]) try { fns[curIdx](t); } catch(e) {}
+                raf = requestAnimationFrame(frame);
+            }
+
+            document.querySelectorAll('.card').forEach((card, i) => {
+                card.addEventListener('mouseenter', () => {
+                    curIdx = i; running = true; startTs = null;
+                    bgEl.classList.add('on');
+                    if (!raf) raf = requestAnimationFrame(frame);
+                });
+                card.addEventListener('mouseleave', () => {
+                    running = false; bgEl.classList.remove('on');
+                    if (raf) { cancelAnimationFrame(raf); raf = null; }
+                    ctx.clearRect(0, 0, W, H);
+                });
+            });
+        })();
+
+        // ── Hub Company Overlay ──────────────────────────────────────────────
+        (function() {
+            const overlay = document.getElementById('hubOverlay');
+            const cv      = document.getElementById('hubCv');
+            const closeBtn = document.getElementById('hubClose');
+            if (!overlay || !cv) return;
+            const ctx = cv.getContext('2d');
+            const NR = '0,212,255', NEON = '#00d4ff';
+            let raf = null, frame = 0, hovN = null;
+            let orbitNs = [];
+            const pkts = [];
+
+            function resize() { cv.width = window.innerWidth; cv.height = window.innerHeight; }
+            resize();
+            window.addEventListener('resize', () => { resize(); if (overlay.classList.contains('open')) setupOrbit(); });
+
+            function setupOrbit() {
+                const W = cv.width, H = cv.height;
+                const R = Math.min(W,H)*0.31;
+                orbitNs = SERVICES_DATA.map((s, i) => ({
+                    icon: s.icon, title: s.title, num: s.num,
+                    angle: (i/SERVICES_DATA.length)*Math.PI*2 - Math.PI/2,
+                    R, cx: 0, cy: 0, spawned: false
+                }));
+            }
+
+            let drops = [];
+            function initRain() {
+                drops = Array.from({length: Math.floor(cv.width/16)}, () => Math.random()*cv.height);
+            }
+
+            function tick() {
+                const W = cv.width, H = cv.height;
+                const cx = W/2, cy = H/2;
+                const T = frame / 60;
+
+                ctx.fillStyle = 'rgba(0,2,6,0.2)';
+                ctx.fillRect(0,0,W,H);
+
+                // Matrix rain boot (first 70 frames)
+                if (frame < 72) {
+                    const ra = Math.min(frame/28,1)*(1-frame/72)*0.45;
+                    ctx.font='12px "JetBrains Mono",monospace';
+                    const CH='01><{}_|ABCDEFアウ';
+                    drops.forEach((y,col) => {
+                        ctx.fillStyle=`rgba(${NR},${ra})`;
+                        ctx.fillText(CH[Math.floor(Math.random()*CH.length)], col*16+6, y);
+                        drops[col]+=16;
+                        if(drops[col]>H&&Math.random()>0.97) drops[col]=0;
+                    });
+                }
+
+                // Radial grid
+                const gA = Math.min(frame/55,1)*0.028;
+                for(let r=65;r<Math.max(W,H);r+=95){
+                    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+                    ctx.strokeStyle=`rgba(${NR},${gA})`; ctx.lineWidth=1; ctx.stroke();
+                }
+                for(let ai=0;ai<12;ai++){
+                    const a=(ai/12)*Math.PI*2;
+                    ctx.beginPath(); ctx.moveTo(cx,cy);
+                    ctx.lineTo(cx+Math.cos(a)*Math.max(W,H), cy+Math.sin(a)*Math.max(W,H));
+                    ctx.strokeStyle=`rgba(${NR},${gA*0.55})`; ctx.lineWidth=1; ctx.stroke();
+                }
+
+                // Hub rings (frame 15+)
+                if (frame > 15) {
+                    const hA = Math.min((frame-15)/45,1);
+                    for(let ri=0;ri<4;ri++){
+                        const ang = T*(0.45+ri*0.18)*(ri%2===0?1:-1);
+                        ctx.save(); ctx.translate(cx,cy); ctx.rotate(ang);
+                        ctx.beginPath(); ctx.arc(0,0,44+ri*12,0,Math.PI*(1.35+ri*0.12));
+                        ctx.strokeStyle=`rgba(${NR},${hA*(0.28-ri*0.05)})`;
+                        ctx.lineWidth=1.5; ctx.stroke(); ctx.restore();
+                    }
+                    const br=Math.sin(T*2)*2;
+                    ctx.beginPath(); ctx.arc(cx,cy,36+br,0,Math.PI*2);
+                    ctx.fillStyle=`rgba(${NR},${hA*0.12})`; ctx.fill();
+                    ctx.strokeStyle=NEON; ctx.lineWidth=2;
+                    ctx.shadowColor=NEON; ctx.shadowBlur=hA*22;
+                    ctx.stroke(); ctx.shadowBlur=0;
+                }
+
+                // AUT text (frame 38+)
+                if (frame > 38) {
+                    const p=Math.min((frame-38)/50,1), ease=1-Math.pow(1-p,3);
+                    ctx.font=`bold ${Math.round(ease*36)}px "JetBrains Mono",monospace`;
+                    ctx.textAlign='center'; ctx.textBaseline='middle';
+                    ctx.fillStyle=NEON; ctx.shadowColor=NEON; ctx.shadowBlur=ease*22;
+                    ctx.fillText('AUT',cx,cy-7);
+                    ctx.font=`${Math.round(ease*10)}px "JetBrains Mono",monospace`;
+                    ctx.fillStyle=`rgba(${NR},0.55)`; ctx.shadowBlur=ease*7;
+                    ctx.fillText('CORE',cx,cy+10); ctx.shadowBlur=0;
+                }
+
+                // Title typewriter (frame 68+)
+                if (frame > 68) {
+                    const p=Math.min((frame-68)/55,1);
+                    const title='AUTOMATIZACIÓN INTELIGENTE';
+                    ctx.font=`bold ${W<700?20:26}px "JetBrains Mono",monospace`;
+                    ctx.textAlign='center'; ctx.textBaseline='top';
+                    ctx.fillStyle=`rgba(${NR},0.92)`; ctx.shadowColor=NEON; ctx.shadowBlur=12;
+                    ctx.fillText(title.slice(0,Math.round(p*title.length)),cx,cy-100);
+                    ctx.shadowBlur=0;
+                    if(p>0.72){
+                        const sp=(p-0.72)/0.28;
+                        const sub='// OPTIMIZAMOS TUS PROCESOS CON TECNOLOGÍA';
+                        ctx.font=`${W<700?10:13}px "JetBrains Mono",monospace`;
+                        ctx.fillStyle=`rgba(${NR},0.38)`;
+                        ctx.fillText(sub.slice(0,Math.round(sp*sub.length)),cx,cy-62);
+                    }
+                }
+
+                // Stats row (frame 115+)
+                if (frame > 115) {
+                    const sp=Math.min((frame-115)/38,1);
+                    const stats=[['12','SERVICIOS'],['24/7','DISPONIBILIDAD'],['99.9%','UPTIME'],['0','DOWNTIME']];
+                    const tw=stats.length*130;
+                    stats.forEach(([val,lbl],i)=>{
+                        const sx=cx-tw/2+i*130+65, sy=cy+118;
+                        ctx.font=`bold ${W<700?16:20}px "JetBrains Mono",monospace`;
+                        ctx.textAlign='center'; ctx.textBaseline='bottom';
+                        ctx.fillStyle=`rgba(${NR},${sp*0.9})`; ctx.shadowColor=NEON; ctx.shadowBlur=8;
+                        ctx.fillText(val,sx,sy); ctx.shadowBlur=0;
+                        ctx.font=`${W<700?8:10}px "JetBrains Mono",monospace`;
+                        ctx.fillStyle=`rgba(${NR},${sp*0.32})`;
+                        ctx.fillText(lbl,sx,sy+13);
+                    });
+                }
+
+                // Service nodes orbit out (frame 118+)
+                if (frame > 118) {
+                    orbitNs.forEach((n, i) => {
+                        const ef = frame - 118 - i*7;
+                        if(ef < 0) return;
+                        if(!n.spawned) n.spawned=true;
+                        const p=Math.min(ef/55,1), ease=1-Math.pow(1-p,3);
+                        const angle=n.angle+T*0.042;
+                        const r=n.R*ease;
+                        n.cx=cx+Math.cos(angle)*r;
+                        n.cy=cy+Math.sin(angle)*r;
+
+                        const isH=n===hovN;
+
+                        // Gradient connection
+                        const g=ctx.createLinearGradient(cx,cy,n.cx,n.cy);
+                        g.addColorStop(0,`rgba(${NR},${ease*(isH?0.55:0.16)})`);
+                        g.addColorStop(1,`rgba(${NR},${ease*(isH?0.15:0.04)})`);
+                        ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(n.cx,n.cy);
+                        ctx.strokeStyle=g; ctx.lineWidth=isH?1.5:0.6; ctx.stroke();
+
+                        // Pulse ring
+                        const ph=((T+i*0.22)%1.4)/1.4;
+                        ctx.beginPath(); ctx.arc(n.cx,n.cy,(isH?28:22)*ease+ph*18,0,Math.PI*2);
+                        ctx.strokeStyle=`rgba(${NR},${ease*(isH?0.38:0.1)*(1-ph)})`;
+                        ctx.lineWidth=1; ctx.stroke();
+
+                        // Node body
+                        const nr=(isH?27:22)*ease;
+                        ctx.beginPath(); ctx.arc(n.cx,n.cy,nr,0,Math.PI*2);
+                        ctx.fillStyle=`rgba(${NR},${ease*(isH?0.18:0.07)})`; ctx.fill();
+                        ctx.strokeStyle=NEON; ctx.lineWidth=isH?2:1;
+                        ctx.shadowColor=NEON; ctx.shadowBlur=ease*(isH?22:8);
+                        ctx.stroke(); ctx.shadowBlur=0;
+
+                        // Icon
+                        ctx.font=`${Math.round(ease*(isH?19:16))}px serif`;
+                        ctx.textAlign='center'; ctx.textBaseline='middle';
+                        ctx.fillText(n.icon,n.cx,n.cy);
+
+                        // Num
+                        ctx.font=`${Math.round(ease*7)}px "JetBrains Mono",monospace`;
+                        ctx.fillStyle=`rgba(${NR},${ease*(isH?0.9:0.38)})`;
+                        ctx.fillText(n.num,n.cx,n.cy-28*ease);
+
+                        // Hover label
+                        if(isH){
+                            const lbl=n.title.toUpperCase();
+                            ctx.font='700 10px "JetBrains Mono",monospace';
+                            const lw=ctx.measureText(lbl).width;
+                            ctx.fillStyle='rgba(0,3,8,0.9)';
+                            ctx.fillRect(n.cx-lw/2-7,n.cy+nr+6,lw+14,18);
+                            ctx.strokeStyle=`rgba(${NR},0.4)`; ctx.lineWidth=0.5;
+                            ctx.strokeRect(n.cx-lw/2-7,n.cy+nr+6,lw+14,18);
+                            ctx.fillStyle='#e0f7ff'; ctx.shadowColor=NEON; ctx.shadowBlur=6;
+                            ctx.fillText(lbl,n.cx,n.cy+nr+15); ctx.shadowBlur=0;
+                        }
+                    });
+                }
+
+                // Data packets (frame 200+)
+                if (frame > 200) {
+                    if (frame%34===0) {
+                        const n=orbitNs[Math.floor(Math.random()*orbitNs.length)];
+                        if(n.spawned){const toHub=Math.random()<0.5;pkts.push({n,toHub,t:0,spd:0.006+Math.random()*0.005});}
+                    }
+                    for(let pi=pkts.length-1;pi>=0;pi--){
+                        const p=pkts[pi]; p.t+=p.spd;
+                        if(p.t>1){pkts.splice(pi,1);continue;}
+                        const fx=p.toHub?p.n.cx:cx, fy=p.toHub?p.n.cy:cy;
+                        const tx=p.toHub?cx:p.n.cx, ty=p.toHub?cy:p.n.cy;
+                        for(let ti=5;ti>=0;ti--){
+                            const tt=Math.max(0,p.t-ti*0.013);
+                            ctx.beginPath(); ctx.arc(fx+(tx-fx)*tt,fy+(ty-fy)*tt,Math.max(0.1,1.8-ti*0.26),0,Math.PI*2);
+                            ctx.fillStyle=`rgba(${NR},${Math.max(0,0.65-ti*0.1)})`; ctx.fill();
+                        }
+                        const px=fx+(tx-fx)*p.t, py=fy+(ty-fy)*p.t;
+                        ctx.beginPath(); ctx.arc(px,py,2.8,0,Math.PI*2);
+                        ctx.fillStyle='rgba(220,245,255,0.95)';
+                        ctx.shadowColor=NEON; ctx.shadowBlur=12; ctx.fill(); ctx.shadowBlur=0;
+                    }
+                }
+
+                // Instructions
+                if(frame>235){
+                    const a=Math.min((frame-235)/40,1);
+                    ctx.font='10px "JetBrains Mono",monospace';
+                    ctx.textAlign='center'; ctx.textBaseline='bottom';
+                    ctx.fillStyle=`rgba(${NR},${a*0.28})`;
+                    ctx.fillText('// HOVER PARA EXPLORAR · CLICK PARA VER SERVICIO',cx,H-90);
+                }
+
+                frame++;
+                raf = requestAnimationFrame(tick);
+            }
+
+            // Mouse interaction on overlay canvas
+            cv.addEventListener('mousemove', e => {
+                hovN = orbitNs.find(n => n.spawned && Math.hypot(n.cx-e.clientX, n.cy-e.clientY) < 28) || null;
+                cv.style.cursor = hovN ? 'pointer' : 'crosshair';
+            });
+            cv.addEventListener('click', e => {
+                if(hovN){ const i=orbitNs.indexOf(hovN); closeOverlay(); setTimeout(()=>openServiceModal(i),420); }
+            });
+
+            function closeOverlay() {
+                overlay.classList.remove('open');
+                setTimeout(()=>{ overlay.style.display='none'; if(raf){cancelAnimationFrame(raf);raf=null;} },500);
+            }
+
+            window.openHubOverlay = function() {
+                overlay.style.display='block';
+                requestAnimationFrame(()=>overlay.classList.add('open'));
+                frame=0; hovN=null; pkts.length=0;
+                setupOrbit(); initRain();
+                ctx.clearRect(0,0,cv.width,cv.height);
+                if(raf) cancelAnimationFrame(raf);
+                raf = requestAnimationFrame(tick);
+            };
+
+            closeBtn.addEventListener('click', closeOverlay);
+            document.addEventListener('keydown', e => {
+                if(e.key==='Escape' && overlay.classList.contains('open')) closeOverlay();
             });
         })();
 
