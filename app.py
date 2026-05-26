@@ -2,10 +2,11 @@ import os
 import json
 from flask import Flask, render_template, request
 import requests
-from dotenv import load_dotenv
-
-# Carga variables desde archivo .env (útil en desarrollo local)
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()  # Solo activo en desarrollo local si python-dotenv está instalado
+except ImportError:
+    pass
 
 app = Flask(__name__)
 
