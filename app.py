@@ -2,17 +2,24 @@ import os
 import json
 from flask import Flask, render_template, request
 import requests
+from dotenv import load_dotenv
+
+# Carga variables desde archivo .env (útil en desarrollo local)
+load_dotenv()
 
 app = Flask(__name__)
 
-# Configuración usando variables de entorno (Las que pusiste en Render)
-TOKEN = os.environ.get("TELEGRAM_TOKEN")
-CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+# ── Verificación de configuración al arrancar ───────────────────────────────
+TOKEN        = os.environ.get("TELEGRAM_TOKEN")
+CHAT_ID      = os.environ.get("TELEGRAM_CHAT_ID")
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY")
+SENDER_EMAIL  = os.environ.get("SENDER_EMAIL", "noreply@tudominio.com")
+SENDER_NAME   = os.environ.get("SENDER_NAME", "SISTEMA AUT")
 
-# Brevo (Sendinblue) — envío de correos transaccionales
-BREVO_API_KEY   = os.environ.get("BREVO_API_KEY")
-SENDER_EMAIL    = os.environ.get("SENDER_EMAIL", "noreply@tudominio.com")
-SENDER_NAME     = os.environ.get("SENDER_NAME", "SISTEMA AUT")
+print("[CONFIG] TELEGRAM_TOKEN   :", "OK" if TOKEN        else "⚠ NO CONFIGURADO")
+print("[CONFIG] TELEGRAM_CHAT_ID :", "OK" if CHAT_ID      else "⚠ NO CONFIGURADO")
+print("[CONFIG] BREVO_API_KEY    :", "OK" if BREVO_API_KEY else "⚠ NO CONFIGURADO")
+print("[CONFIG] SENDER_EMAIL     :", SENDER_EMAIL)
 
 def notificar_telegram(nombre, email, empresa, telefono, descripcion=''):
     # Validamos que tengamos las credenciales
@@ -150,9 +157,25 @@ def enviar_correo_confirmacion(nombre, email, empresa, telefono, descripcion):
             data=json.dumps(payload),
             timeout=10,
         )
-        print("Brevo response:", response.status_code, response.text)
+        if response.status_code == 201:
+            print(f"[BREVO] ✅ Correo enviado correctamente a {email}")
+        else:
+            print(f"[BREVO] ❌ Error {response.status_code}: {response.text}")
     except Exception as e:
-        print(f"Error al enviar correo con Brevo: {e}")
+        print(f"[BREVO] ❌ Excepción al enviar correo: {e}")
+
+
+@app.route('/health')
+def health():
+    """Endpoint de diagnóstico — muestra qué variables están configuradas."""
+    from flask import jsonify
+    return jsonify({
+        "TELEGRAM_TOKEN":   "OK" if TOKEN        else "NO CONFIGURADO",
+        "TELEGRAM_CHAT_ID": "OK" if CHAT_ID      else "NO CONFIGURADO",
+        "BREVO_API_KEY":    "OK" if BREVO_API_KEY else "NO CONFIGURADO",
+        "SENDER_EMAIL":     SENDER_EMAIL,
+        "SENDER_NAME":      SENDER_NAME,
+    })
 
 
 @app.route('/')
